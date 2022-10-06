@@ -1,0 +1,65 @@
+:root {
+  /* ----------------------------------------------
+  | Media queries
+  | -----------------------------------------------
+  */
+  --mq-xs: 0;
+  --mq-sm: 640px;
+  --mq-md: 768px;
+  --mq-lg: 1024px;
+  --mq-xl: 1280px;
+  --mq-xxl: 1536px;
+
+  /* ----------------------------------------------
+  | Gutter settings
+  | -----------------------------------------------
+  */
+  --gutter-xxs: 5px;
+  --gutter-xs: 10px;
+  --gutter-sm: 15px;
+  --gutter-md: 30px;
+  --gutter-md-plus: 40px;
+  --gutter-lg: 60px;
+  --gutter-xl: 90px;
+  --gutter-xxl: 120px;
+  --gutter-grande: 180px;
+  --gutter-mucho-grande: 240px;
+
+  /* ----------------------------------------------
+  | Color palette
+  | -----------------------------------------------
+  */
+  --color-white: #fff;
+  --color-white-transparent: rgba(255, 255, 255, 0.5);
+  --color-black: #202020;
+  --color-black-transparent: rgba(32, 32, 32, 0.23);
+  --color-gray-700: #9b9999;
+  --color-gray-400: #eaeaea;
+  --color-gray-200: #f7f7f7;
+  --color-red-300: #deacac;
+  --color-blue: #4670bb;
+
+  /* ----------------------------------------------
+  | Color usage
+  | -----------------------------------------------
+  */
+  --color-bg-header: var(--color-white);
+  --color-bg-body: var(--color-red-300);
+  --color-bg-sidebar: var(--color-gray-200);
+  --color-bg-list-active: var(--color-gray-400);
+  --color-bg-search: var(--color-gray-400);
+  --color-bg-dark: var(--color-black-transparent);
+  --color-bg-todoitem: var(--color-white);
+  --color-bg-todoitem-active: var(--color-white-transparent);
+  --color-bg-pane-header: var(--color-white);
+  --color-bg-pane-footer: var(--color-white);
+  --color-bg-pane-card: var(--color-white);
+  --color-bg-pane-body: var(--color-gray-200);
+
+  --color-text-main: var(--color-black);
+  --color-text-inverted: var(--color-white);
+  --color-text-lighter: var(--color-gray-700);
+  --color-text-highlighted: var(--color-blue);
+
+  --color-border-pane: var(--color-gray-400);
+}

@@ -1,0 +1,44 @@
+@import "_reset.css";
+@import "_variables.css";
+@import "_typography.css";
+
+/* ----------------------------------------------
+| sticky footer with flexbox
+| -----------------------------------------------
+*/
+html {
+  height: 100%;
+  font-size: var(--base-font-size);
+}
+
+body {
+  height: 100%;
+  font-family: var(--ff-body);
+  font-weight: var(--fw-normal);
+  color: var(--color-text-main);
+  font-size: rem(15);
+  line-height: 1.5;
+}
+
+p {
+  margin-bottom: 1.5rem;
+}
+
+a,
+a:active,
+a:visited,
+a:hover {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--ff-header);
+  font-weight: var(--fw-bold);
+  line-height: 1.5;
+}

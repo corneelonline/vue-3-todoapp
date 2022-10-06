@@ -1,0 +1,38 @@
+/* ----------------------------------------------
+| Font face declarations
+| -----------------------------------------------
+*/
+
+/* roboto-regular - latin */
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 400;
+  src: local(""),
+    url("assets/fonts/roboto-v30-latin-regular.woff2") format("woff2"),
+    url("assets/fonts/roboto-v30-latin-regular.woff") format("woff");
+}
+/* roboto-700 - latin */
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 700;
+  src: local(""), url("assets/fonts/roboto-v30-latin-700.woff2") format("woff2"),
+    url("assets/fonts/roboto-v30-latin-700.woff") format("woff");
+}
+
+/* ----------------------------------------------
+| Font vars
+| -----------------------------------------------
+*/
+:root {
+  --base-font-size: 100%;
+  --ff-header: "Roboto", sans-serif;
+  --ff-body: "Roboto", sans-serif;
+  --fw-light: 200;
+  --fw-regular: 400;
+  --fw-normal: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+}
