@@ -1,14 +1,21 @@
 import { ref } from "vue";
 
-export function useSidebarOpen() {
-  const isSidebarOpen = ref(true);
+const globalState = ref(true);
+
+export const useSidebarOpen = () => {
+  const localState = ref(true);
 
   const toggleSidebarOpen = () => {
-    isSidebarOpen.value = !isSidebarOpen.value;
+    // Set the global state values
+    globalState.value != globalState.value;
+
+    // Set the local state values
+    localState.value = !localState.value;
   };
 
   return {
-    isSidebarOpen,
+    globalState,
+    localState,
     toggleSidebarOpen,
   };
-}
+};

@@ -1,10 +1,14 @@
 <script setup>
+import { RouterLink } from "vue-router";
 import { storeToRefs } from "pinia";
 import { useSidebarOpen } from "../composables/useSidebarOpen.js";
 import { useListsStore } from "../stores/lists";
+import IconInbox from "./icons/IconInbox.vue";
+import IconCalendar from "./icons/IconCalendar.vue";
+import IconList from "./icons/IconList.vue";
 
 // the sidebar toggle menu
-const { isSidebarOpen } = useSidebarOpen();
+const { globalState } = useSidebarOpen();
 
 // get the lists
 const listsStore = useListsStore();
@@ -20,17 +24,20 @@ const addNewList = (value) => {
 </script>
 
 <template>
-  <aside :class="isSidebarOpen ? 'expanded' : 'collapsed'">
+  <aside :class="globalState ? 'expanded' : 'collapsed'">
     <div v-if="error">{{ error.message }}</div>
     <ul v-if="lists" class="lists">
       <li class="inbox">
-        <nuxt-link to="/app/list/inbox">Inbox</nuxt-link>
+        <span class="icon"><IconInbox /></span>
+        <RouterLink to="/app/list/inbox">Inbox</RouterLink>
       </li>
       <li class="today">
-        <nuxt-link to="/app/today">Today</nuxt-link>
+        <span class="icon"><IconCalendar /></span>
+        <RouterLink to="/app/today">Today</RouterLink>
       </li>
       <li v-for="list in lists" :key="list.id" class="user-defined">
-        <nuxt-link :to="`/app/list/${list.id}`">{{ list.title }}</nuxt-link>
+        <span class="icon"><IconList /></span>
+        <RouterLink :to="`/app/list/${list.id}`">{{ list.title }}</RouterLink>
       </li>
     </ul>
     <AddList @newList="addNewList" />
@@ -64,25 +71,14 @@ aside.collapsed {
 li {
   padding-top: var(--gutter-xxs);
   padding-bottom: var(--gutter-xxs);
-  padding-left: var(--gutter-md-plus);
+  padding-left: var(--gutter-sm);
   padding-right: var(--gutter-sm);
   margin-bottom: var(--gutter-xxs);
   background-color: var(--color-bg-sidebar);
   border: 1px solid var(--color-bg-sidebar);
-  position: relative;
-}
-
-li::before {
-  content: "";
-  display: block;
-  width: 24px;
-  height: 24px;
-  position: absolute;
-  left: var(--gutter-xs);
-  top: 6px;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+  display: flex;
+  align-items: center;
+  gap: var(--gutter-xxs);
 }
 
 li a {
@@ -90,14 +86,24 @@ li a {
   display: block;
 }
 
-li.inbox::before {
-  background-image: url("~/assets/icons/inbox.svg");
+li span.icon {
+  display: inline-block;
+  width: 30px;
+  height: 24px;
 }
-li.today::before {
-  background-image: url("~/assets/icons/calendar.svg");
+
+li.inbox span.icon svg,
+li.user-defined span.icon svg {
+  width: 24px;
+  height: 24px;
 }
-li.user-defined::before {
-  background-image: url("~/assets/icons/list.svg");
+li.today span.icon {
+  width: 28px;
+  padding-left: 3px;
+}
+li.today span.icon svg {
+  width: 18px;
+  height: 21px;
 }
 li:has(.router-link-active) {
   background-color: var(--color-bg-list-active);
