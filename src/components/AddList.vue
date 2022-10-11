@@ -38,6 +38,10 @@ form.add-list label {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 30px;
+  height: 24px;
+}
+form.add-list label svg {
   width: 24px;
   height: 24px;
 }
@@ -45,7 +49,7 @@ form.add-list input {
   width: 100%;
   padding-top: var(--gutter-xxs);
   padding-bottom: var(--gutter-xxs);
-  padding-left: var(--gutter-sm);
+  padding-left: var(--gutter-xs);
   padding-right: var(--gutter-sm);
 }
 
