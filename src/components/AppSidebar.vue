@@ -6,6 +6,7 @@ import { useListsStore } from "../stores/lists";
 import IconInbox from "./icons/IconInbox.vue";
 import IconCalendar from "./icons/IconCalendar.vue";
 import IconList from "./icons/IconList.vue";
+import AddList from "./AddList.vue";
 
 // the sidebar toggle menu
 const { globalState } = useSidebarOpen();
