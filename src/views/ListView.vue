@@ -9,6 +9,7 @@ import TodoItem from "../components/TodoItem.vue";
 import { useSidebarOpen } from "../composables/useSidebarOpen.js";
 import { useListsStore } from "../stores/lists";
 import { useTodosStore } from "../stores/todos";
+import EditPane from "../components/EditPane.vue";
 
 const { globalState } = useSidebarOpen();
 
@@ -99,6 +100,7 @@ const editItem = (itemId) => {
         </div>
       </div>
     </main>
+    <EditPane />
   </div>
 </template>
 

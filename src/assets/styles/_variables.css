@@ -33,9 +33,12 @@
   --color-white-transparent: rgba(255, 255, 255, 0.5);
   --color-black: #202020;
   --color-black-transparent: rgba(32, 32, 32, 0.23);
+  --color-black-overlay: rgba(32, 32, 32, 0.8);
   --color-gray-700: #9b9999;
+  --color-gray-500: #ccc;
   --color-gray-400: #eaeaea;
   --color-gray-200: #f7f7f7;
+  --color-red-700: #bb4646;
   --color-red-300: #deacac;
   --color-blue: #4670bb;
 
@@ -51,15 +54,19 @@
   --color-bg-dark: var(--color-black-transparent);
   --color-bg-todoitem: var(--color-white);
   --color-bg-todoitem-active: var(--color-white-transparent);
-  --color-bg-pane-header: var(--color-white);
-  --color-bg-pane-footer: var(--color-white);
-  --color-bg-pane-card: var(--color-white);
-  --color-bg-pane-body: var(--color-gray-200);
+  --color-bg-modal-header: var(--color-white);
+  --color-bg-modal-footer: var(--color-white);
+  --color-bg-modal-card: var(--color-white);
+  --color-bg-modal-body: var(--color-gray-200);
+  --color-bg-button-primary: var(--color-blue);
+  --color-bg-button-secondary: var(--color-gray-500);
+  --color-bg-button-warning: var(--color-red-700);
 
   --color-text-main: var(--color-black);
   --color-text-inverted: var(--color-white);
   --color-text-lighter: var(--color-gray-700);
   --color-text-highlighted: var(--color-blue);
 
-  --color-border-pane: var(--color-gray-400);
+  --color-border-fieldset: var(--color-gray-400);
+  --color-border-fieldgroup: var(--color-gray-500);
 }
