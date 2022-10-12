@@ -5,6 +5,7 @@ import { storeToRefs } from "pinia";
 import { v4 as uuid } from "uuid";
 import AppSidebar from "../components/AppSidebar.vue";
 import AddTodo from "../components/AddTodo.vue";
+import TodoItem from "../components/TodoItem.vue";
 import { useSidebarOpen } from "../composables/useSidebarOpen.js";
 import { useListsStore } from "../stores/lists";
 import { useTodosStore } from "../stores/todos";
@@ -37,8 +38,9 @@ const pageTitle = computed(() => {
 
 // get the todos of this list
 const todosStore = useTodosStore();
-// const { todos } = storeToRefs(todosStore);
-const { fetchTodos, addTodo } = todosStore;
+const { todos } = storeToRefs(todosStore);
+const { fetchTodos, addTodo, fetchTodo, toggleCompleted, setEditMode } =
+  todosStore;
 fetchTodos(route.params.id);
 
 // add a new list
@@ -59,6 +61,17 @@ const addNewTodo = (value) => {
   };
   addTodo(newTodo);
 };
+
+const toggleItem = (itemId) => {
+  fetchTodo(itemId);
+  toggleCompleted();
+};
+
+// open edit pane
+const editItem = (itemId) => {
+  setEditMode(true);
+  fetchTodo(itemId);
+};
 </script>
 
 <template>
@@ -75,6 +88,13 @@ const addNewTodo = (value) => {
         <div class="todo-main">
           <div class="todo-items">
             <AddTodo @newTodo="addNewTodo" />
+            <TodoItem
+              v-for="item in todos"
+              :key="item.id"
+              :item="item"
+              @toggleCompleted="toggleItem"
+              @editTodo="editItem"
+            />
           </div>
         </div>
       </div>
