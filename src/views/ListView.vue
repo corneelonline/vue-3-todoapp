@@ -2,9 +2,12 @@
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
+import { v4 as uuid } from "uuid";
 import AppSidebar from "../components/AppSidebar.vue";
+import AddTodo from "../components/AddTodo.vue";
 import { useSidebarOpen } from "../composables/useSidebarOpen.js";
 import { useListsStore } from "../stores/lists";
+import { useTodosStore } from "../stores/todos";
 
 const { globalState } = useSidebarOpen();
 
@@ -32,9 +35,29 @@ const pageTitle = computed(() => {
   }
 });
 
+// get the todos of this list
+const todosStore = useTodosStore();
+// const { todos } = storeToRefs(todosStore);
+const { fetchTodos, addTodo } = todosStore;
+fetchTodos(route.params.id);
+
 // add a new list
 const addNewList = (value) => {
   addList(value);
+};
+
+// add a new todo
+const addNewTodo = (value) => {
+  const newTodo = {
+    id: uuid(),
+    title: value,
+    completed: false,
+    due_date: "",
+    notes: "",
+    parent_id: "",
+    list_id: route.params.id,
+  };
+  addTodo(newTodo);
 };
 </script>
 
@@ -45,10 +68,16 @@ const addNewList = (value) => {
       <div v-if="listNotFound" class="warning">
         The list you are looking for cannot be found.
       </div>
-      <template v-else>
-        <h1>{{ pageTitle }}</h1>
-        <p>Hier komen de todos...</p>
-      </template>
+      <div v-else class="main-content">
+        <header>
+          <h1>{{ pageTitle }}</h1>
+        </header>
+        <div class="todo-main">
+          <div class="todo-items">
+            <AddTodo @newTodo="addNewTodo" />
+          </div>
+        </div>
+      </div>
     </main>
   </div>
 </template>
