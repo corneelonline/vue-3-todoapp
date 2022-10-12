@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
-import { todos } from "@/data";
+import { todos } from "../data.js";
+import { useListsStore } from "../stores/lists";
 
-export const useTodosStore = defineStore({
-  id: "todo",
+export const useTodosStore = defineStore("todosStore", {
   state: () => ({
     todos: [],
     todo: null,
@@ -16,7 +16,7 @@ export const useTodosStore = defineStore({
     },
   },
   actions: {
-    async fetchTodos(listId) {
+    fetchTodos(listId) {
       this.todos = [];
       try {
         this.todos = [...todos].filter((todo) => todo.listId === listId);
@@ -24,7 +24,7 @@ export const useTodosStore = defineStore({
         this.error = error;
       }
     },
-    async fetchTodo(id) {
+    fetchTodo(id) {
       this.todo = null;
       try {
         this.todo = this.todos.filter((todo) => todo.id === id).pop();
