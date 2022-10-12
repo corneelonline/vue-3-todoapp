@@ -1,14 +1,36 @@
 <script setup>
+import { computed } from "vue";
+import { useRoute } from "vue-router";
+import { storeToRefs } from "pinia";
 import AppSidebar from "../components/AppSidebar.vue";
 import { useSidebarOpen } from "../composables/useSidebarOpen.js";
 import { useListsStore } from "../stores/lists";
 
 const { globalState } = useSidebarOpen();
 
+const route = useRoute();
+
 // get the lists
 const listsStore = useListsStore();
-const { fetchLists, addList } = listsStore;
+const { list, lists } = storeToRefs(listsStore);
+const { fetchLists, fetchList, addList } = listsStore;
 fetchLists();
+
+// get the title of this list
+let listNotFound = false;
+const pageTitle = computed(() => {
+  if (route.params.id === "inbox") {
+    return "Inbox";
+  } else {
+    fetchList(route.params.id);
+    if (list.value) {
+      return list.value.title;
+    } else {
+      listNotFound = true;
+      return "List not found";
+    }
+  }
+});
 
 // add a new list
 const addNewList = (value) => {
@@ -18,10 +40,15 @@ const addNewList = (value) => {
 
 <template>
   <div class="wrapper" :class="globalState ? 'sidebar-open' : 'sidebar-closed'">
-    <AppSidebar :lists="listsStore.lists" @newList="addNewList" />
+    <AppSidebar :lists="lists" @newList="addNewList" />
     <main id="main">
-      <h1>ListView</h1>
-      <pre>{{ listsStore.lists }}</pre>
+      <div v-if="listNotFound" class="warning">
+        The list you are looking for cannot be found.
+      </div>
+      <template v-else>
+        <h1>{{ pageTitle }}</h1>
+        <p>Hier komen de todos...</p>
+      </template>
     </main>
   </div>
 </template>
