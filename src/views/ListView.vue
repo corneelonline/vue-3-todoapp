@@ -107,14 +107,21 @@ const editItem = (itemId) => {
   display: flex;
   min-height: calc(100vh - 50px);
 }
+
 #main {
   background-color: var(--color-bg-body);
   padding: var(--gutter-md);
 }
+
 .sidebar-open #main {
   width: calc(100% - 270px);
 }
+
 .sidebar-closed #main {
   width: 100%;
+}
+
+h1 {
+  font-size: 1.5rem;
 }
 </style>
