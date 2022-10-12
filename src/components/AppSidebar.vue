@@ -1,33 +1,34 @@
 <script setup>
+import { ref } from "vue";
 import { RouterLink } from "vue-router";
-import { storeToRefs } from "pinia";
-import { useSidebarOpen } from "../composables/useSidebarOpen.js";
-import { useListsStore } from "../stores/lists";
 import IconInbox from "./icons/IconInbox.vue";
 import IconCalendar from "./icons/IconCalendar.vue";
 import IconList from "./icons/IconList.vue";
-import AddList from "./AddList.vue";
+import IconAdd from "./icons/IconAdd.vue";
 
-// the sidebar toggle menu
-const { globalState } = useSidebarOpen();
-
-// get the lists
-const listsStore = useListsStore();
-const { lists, error } = storeToRefs(listsStore);
-const { fetchLists, addList } = listsStore;
-
-fetchLists();
+// eslint-disable-next-line no-unused-vars
+const props = defineProps({
+  lists: {
+    type: [Object],
+  },
+});
+const lists = ref(props.lists);
 
 // add a new todo
-const addNewList = (value) => {
-  addList(value);
+const input = ref("");
+
+const emit = defineEmits(["newList"]);
+
+const handleSubmit = () => {
+  if (!input.value) return;
+  emit("newList", input.value);
+  input.value = "";
 };
 </script>
 
 <template>
-  <aside :class="globalState ? 'expanded' : 'collapsed'">
-    <div v-if="error">{{ error.message }}</div>
-    <ul v-if="lists" class="lists">
+  <aside>
+    <ul class="lists">
       <li class="inbox">
         <span class="icon"><IconInbox /></span>
         <RouterLink to="/app/list/inbox">Inbox</RouterLink>
@@ -41,7 +42,18 @@ const addNewList = (value) => {
         <RouterLink :to="`/app/list/${list.id}`">{{ list.title }}</RouterLink>
       </li>
     </ul>
-    <AddList @newList="addNewList" />
+    <form class="add-list" @submit.prevent="handleSubmit">
+      <div class="form-field">
+        <label for="new-list" class="icon"><IconAdd /></label>
+        <input
+          type="text"
+          name="new-list"
+          id="new-list"
+          placeholder="Add a list..."
+          v-model="input"
+        />
+      </div>
+    </form>
   </aside>
 </template>
 
@@ -56,13 +68,23 @@ aside {
   transform: translate3d(0, 0, 0);
   transition: width 0.3s ease, transform 0.3s ease;
 }
-aside.collapsed {
+
+.sidebar-open aside {
+  width: 270px;
+  padding: var(--gutter-md) var(--gutter-sm);
+  visibility: visible;
+  transform: translate3d(0, 0, 0);
+  transition: width 0.3s ease, transform 0.3s ease;
+}
+
+.sidebar-closed aside {
   width: 0;
   padding: 0;
   visibility: hidden;
   transform: translate3d(-300px, 0, 0);
   transition: width 0.3s ease, transform 0.3s ease;
 }
+
 .lists {
   list-style: none;
   margin: 0;
@@ -110,5 +132,45 @@ li:has(.router-link-active) {
   background-color: var(--color-bg-list-active);
   border: 1px solid var(--color-bg-list-active);
   border-radius: 4px;
+}
+
+form.add-list .form-field {
+  display: flex;
+  align-items: center;
+  padding-left: var(--gutter-sm);
+}
+form.add-list label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 24px;
+}
+form.add-list label svg {
+  width: 24px;
+  height: 24px;
+}
+form.add-list input {
+  width: 100%;
+  padding-top: var(--gutter-xxs);
+  padding-bottom: var(--gutter-xxs);
+  padding-left: var(--gutter-xs);
+  padding-right: var(--gutter-sm);
+}
+
+form.add-list input::placeholder {
+  color: var(--color-text-lighter);
+}
+
+form.add-list input:focus {
+  background-color: var(--color-bg-list-active);
+  border: 1px solid var(--color-bg-list-active);
+  border-radius: 4px;
+  background-image: none;
+  padding-left: var(--gutter-sm);
+}
+
+form.add-list input:focus ::placeholder {
+  visibility: hidden;
 }
 </style>
