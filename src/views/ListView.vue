@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from "vue";
+import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
 import { v4 as uuid } from "uuid";
@@ -69,7 +69,9 @@ const toggleItem = (itemId) => {
 };
 
 // open edit pane
+const showEditPane = ref(false);
 const editItem = (itemId) => {
+  showEditPane.value = true;
   setEditMode(true);
   fetchTodo(itemId);
 };
@@ -100,7 +102,7 @@ const editItem = (itemId) => {
         </div>
       </div>
     </main>
-    <EditPane />
+    <EditPane v-show="showEditPane" @close-modal="showEditPane = false" />
   </div>
 </template>
 

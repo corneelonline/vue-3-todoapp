@@ -8,17 +8,15 @@ import TodoToggle from "./form/TodoToggle.vue";
 
 const completed = ref(true);
 
+const emit = defineEmits(["closeModal"]);
+
 const submitForm = () => {
   console.log("SUBMIT!!");
 };
 
-// const toggleTodo = () => {
-//   console.log("toggleTodo!!");
-//   completed.value != completed.value;
-// };
-
 const closeModal = () => {
-  console.log("closeModal!!");
+  // console.log("closeModal!!");
+  emit("closeModal");
 };
 
 const deleteTodo = () => {
@@ -62,12 +60,7 @@ const clearDueDate = () => {
           </div>
           <div class="field">
             <label for="todo-date">Due:</label>
-            <input
-              type="date"
-              name="todo-date"
-              id="todo-date"
-              value="2022-10-19"
-            />
+            <input type="date" name="todo-date" id="todo-date" />
             <FormButton class="icon" @click="clearDueDate">
               <IconRemove iconColor="#202020" />
             </FormButton>
@@ -161,17 +154,24 @@ label {
   width: 40px;
 }
 select {
-  border: 1px dotted blue;
   flex-grow: 1;
-  /* width: calc(100% - 40px); */
+  background-color: var(--color-bg-form-select);
+  background-image: url("@/assets/images/icon-select.svg");
+  background-position: 97% center;
+  background-repeat: no-repeat;
+  border: 1px dotted var(--color-bg-form-select);
+  border-radius: 4px;
+  padding: var(--gutter-xxs) var(--gutter-sm);
 }
 
 input[type="date"] {
-  border: 1px dotted blue;
   flex-grow: 1;
-  /* width: calc(100% - 40px); */
+  padding: var(--gutter-xxs) var(--gutter-sm);
 }
 
+textarea::placeholder {
+  color: var(--color-text-lighter);
+}
 .form__footer {
   background-color: var(--color-bg-form-header);
   border-bottom-left-radius: 4px;

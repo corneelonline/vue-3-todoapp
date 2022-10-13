@@ -37,6 +37,7 @@
   --color-gray-700: #9b9999;
   --color-gray-500: #ccc;
   --color-gray-400: #eaeaea;
+  --color-gray-300: #f1f1f1;
   --color-gray-200: #f7f7f7;
   --color-red-700: #bb4646;
   --color-red-300: #deacac;
@@ -58,6 +59,7 @@
   --color-bg-form-footer: var(--color-white);
   --color-bg-form-card: var(--color-white);
   --color-bg-form-body: var(--color-gray-200);
+  --color-bg-form-select: var(--color-gray-300);
   --color-bg-button-primary: var(--color-blue);
   --color-bg-button-secondary: var(--color-gray-500);
   --color-bg-button-warning: var(--color-red-700);
