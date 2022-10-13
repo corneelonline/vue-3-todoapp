@@ -1,17 +1,21 @@
 <script setup>
-import IconChecked from "./icons/IconChecked.vue";
+import { ref } from "vue";
 import IconClose from "./icons/IconClose.vue";
 import IconRemove from "./icons/IconRemove.vue";
 import ModalWindow from "./ModalWindow.vue";
 import FormButton from "./form/FormButton.vue";
+import TodoToggle from "./form/TodoToggle.vue";
+
+const completed = ref(true);
 
 const submitForm = () => {
   console.log("SUBMIT!!");
 };
 
-const toggleTodo = () => {
-  console.log("toggleTodo!!");
-};
+// const toggleTodo = () => {
+//   console.log("toggleTodo!!");
+//   completed.value != completed.value;
+// };
 
 const closeModal = () => {
   console.log("closeModal!!");
@@ -30,10 +34,8 @@ const clearDueDate = () => {
   <ModalWindow>
     <form name="edit-todo" @submit.prevent="submitForm">
       <fieldset class="form__header">
-        <div class="title-field">
-          <span class="todo-item__check" @click="toggleTodo">
-            <IconChecked />
-          </span>
+        <div class="title-field" :class="completed ? 'done' : ''">
+          <TodoToggle v-model:checked="completed" />
           <input
             type="text"
             name="title"
@@ -113,17 +115,18 @@ fieldset {
   align-items: center;
   gap: var(--gutter-sm);
 }
-.todo-item__check,
-.todo-item__close {
-  display: block;
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-}
+
 .todo-title {
   flex-grow: 1;
   text-align: left;
-  border: 1px dotted red;
+  padding: var(--gutter-xxs);
+  font-weight: var(--fw-bold);
+  font-size: 1.25rem;
+}
+
+.title-field.done .todo-title {
+  text-decoration: line-through;
+  color: var(--color-text-lighter);
 }
 
 .form__body {
