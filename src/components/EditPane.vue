@@ -100,7 +100,7 @@ const clearDueDate = () => {
 
 <style scoped>
 fieldset {
-  padding: var(--gutter-md);
+  padding: var(--gutter-sm);
 }
 
 .form__header {
@@ -113,7 +113,7 @@ fieldset {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  gap: var(--gutter-sm);
+  gap: var(--gutter-xs);
 }
 
 .todo-title {
