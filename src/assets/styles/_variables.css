@@ -54,10 +54,10 @@
   --color-bg-dark: var(--color-black-transparent);
   --color-bg-todoitem: var(--color-white);
   --color-bg-todoitem-active: var(--color-white-transparent);
-  --color-bg-modal-header: var(--color-white);
-  --color-bg-modal-footer: var(--color-white);
-  --color-bg-modal-card: var(--color-white);
-  --color-bg-modal-body: var(--color-gray-200);
+  --color-bg-form-header: var(--color-white);
+  --color-bg-form-footer: var(--color-white);
+  --color-bg-form-card: var(--color-white);
+  --color-bg-form-body: var(--color-gray-200);
   --color-bg-button-primary: var(--color-blue);
   --color-bg-button-secondary: var(--color-gray-500);
   --color-bg-button-warning: var(--color-red-700);

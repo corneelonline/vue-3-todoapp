@@ -1,6 +1,9 @@
 <script setup>
 import IconChecked from "./icons/IconChecked.vue";
 import IconClose from "./icons/IconClose.vue";
+import IconRemove from "./icons/IconRemove.vue";
+import ModalWindow from "./ModalWindow.vue";
+import FormButton from "./form/FormButton.vue";
 
 const submitForm = () => {
   console.log("SUBMIT!!");
@@ -17,12 +20,16 @@ const closeModal = () => {
 const deleteTodo = () => {
   console.log("deleteTodo!!");
 };
+
+const clearDueDate = () => {
+  console.log("clearDueDate!!");
+};
 </script>
 
 <template>
-  <div class="modal-overlay">
-    <form name="edit-todo" class="modal" @submit.prevent="submitForm">
-      <fieldset class="modal__header">
+  <ModalWindow>
+    <form name="edit-todo" @submit.prevent="submitForm">
+      <fieldset class="form__header">
         <div class="title-field">
           <span class="todo-item__check" @click="toggleTodo">
             <IconChecked />
@@ -33,12 +40,12 @@ const deleteTodo = () => {
             class="todo-title"
             value="Lorem ipsum jalalaa"
           />
-          <span class="todo-item__close" @click="closeModal">
+          <FormButton class="icon" type="button" @click="closeModal">
             <IconClose />
-          </span>
+          </FormButton>
         </div>
       </fieldset>
-      <fieldset class="modal__body">
+      <fieldset class="form__body">
         <div class="fieldgroup">
           <div class="field">
             <label for="todo-list">List:</label>
@@ -59,6 +66,9 @@ const deleteTodo = () => {
               id="todo-date"
               value="2022-10-19"
             />
+            <FormButton class="icon" @click="clearDueDate">
+              <IconRemove iconColor="#202020" />
+            </FormButton>
           </div>
         </div>
         <div class="fieldgroup">
@@ -71,48 +81,28 @@ const deleteTodo = () => {
           </div>
         </div>
       </fieldset>
-      <fieldset class="modal__footer">
+      <fieldset class="form__footer">
         <div class="button-group">
-          <button class="submit" type="submit">Save</button>
-          <button class="cancel" type="reset" @click="closeModal">
+          <FormButton class="submit" type="submit">Save</FormButton>
+          <FormButton class="cancel" type="reset" @click="closeModal">
             Cancel
-          </button>
+          </FormButton>
         </div>
-        <button class="delete" @click.prevent="deleteTodo">Delete</button>
+        <FormButton class="delete" type="button" @click.prevent="deleteTodo">
+          Delete
+        </FormButton>
       </fieldset>
     </form>
-  </div>
+  </ModalWindow>
 </template>
 
 <style scoped>
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: var(--color-black-overlay);
-  z-index: 20;
-}
-
-.modal {
-  background-color: var(--color-bg-modal-card);
-  height: 500px;
-  width: 500px;
-  border-radius: 4px;
-  display: flex;
-  flex-direction: column;
-}
-
 fieldset {
   padding: var(--gutter-md);
 }
 
-.modal__header {
-  background-color: var(--color-bg-modal-header);
+.form__header {
+  background-color: var(--color-bg-form-header);
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
 }
@@ -136,8 +126,8 @@ fieldset {
   border: 1px dotted red;
 }
 
-.modal__body {
-  background-color: var(--color-bg-modal-body);
+.form__body {
+  background-color: var(--color-bg-form-body);
   border-top: 2px solid var(--color-border-fieldset);
   border-bottom: 2px solid var(--color-border-fieldset);
   flex-grow: 1;
@@ -145,6 +135,7 @@ fieldset {
 
 .fieldgroup {
   border: 1px solid var(--color-border-fieldgroup);
+  background-color: var(--color-bg-form-card);
   border-radius: 4px;
 }
 
@@ -154,6 +145,8 @@ fieldset {
 
 .fieldgroup .field {
   padding: var(--gutter-sm);
+  display: flex;
+  align-items: center;
 }
 
 .fieldgroup .field:not(:last-child) {
@@ -164,15 +157,20 @@ label {
   display: inline-block;
   width: 40px;
 }
-
-input[type="date"],
 select {
   border: 1px dotted blue;
-  width: calc(100% - 40px);
+  flex-grow: 1;
+  /* width: calc(100% - 40px); */
 }
 
-.modal__footer {
-  background-color: var(--color-bg-modal-header);
+input[type="date"] {
+  border: 1px dotted blue;
+  flex-grow: 1;
+  /* width: calc(100% - 40px); */
+}
+
+.form__footer {
+  background-color: var(--color-bg-form-header);
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
   display: flex;
@@ -182,23 +180,5 @@ select {
 .button-group {
   display: flex;
   gap: var(--gutter-xs);
-}
-
-button {
-  display: inline-block;
-  padding: var(--gutter-xxs) var(--gutter-sm);
-  border-radius: 4px;
-}
-
-button.submit {
-  background-color: var(--color-bg-button-primary);
-  color: var(--color-text-inverted);
-}
-button.cancel {
-  background-color: var(--color-bg-button-secondary);
-}
-button.delete {
-  background-color: var(--color-bg-button-warning);
-  color: var(--color-text-inverted);
 }
 </style>
