@@ -1,48 +1,61 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
 import { v4 as uuid } from "uuid";
-import AppSidebar from "../components/AppSidebar.vue";
-import AddTodo from "../components/AddTodo.vue";
-import TodoItem from "../components/TodoItem.vue";
 import { useSidebarOpen } from "../composables/useSidebarOpen.js";
 import { useListsStore } from "../stores/lists";
 import { useTodosStore } from "../stores/todos";
 import EditPane from "../components/EditPane.vue";
+import AppSidebar from "../components/AppSidebar.vue";
+import AddTodo from "../components/AddTodo.vue";
+import TodoItem from "../components/TodoItem.vue";
 
 const { globalState } = useSidebarOpen();
 
 const route = useRoute();
+const pageTitle = ref();
+const currListId = ref({});
+const listNotFound = ref(false);
 
-// get the lists
+currListId.value = route.params.id;
+
 const listsStore = useListsStore();
-const { list, lists } = storeToRefs(listsStore);
+const { lists, list } = storeToRefs(listsStore);
 const { fetchLists, fetchList, addList } = listsStore;
 fetchLists();
 
-// get the title of this list
-let listNotFound = false;
-const pageTitle = computed(() => {
-  if (route.params.id === "inbox") {
-    return "Inbox";
-  } else {
-    fetchList(route.params.id);
-    if (list.value) {
-      return list.value.title;
-    } else {
-      listNotFound = true;
-      return "List not found";
-    }
-  }
-});
-
-// get the todos of this list
 const todosStore = useTodosStore();
 const { todos } = storeToRefs(todosStore);
-const { fetchTodos, addTodo, fetchTodo, toggleCompleted, setEditMode } =
+const { addTodo, fetchTodos, fetchTodo, toggleCompleted, setEditMode } =
   todosStore;
-fetchTodos(route.params.id);
+fetchTodos(currListId.value);
+
+// get the title of this list
+function getPageTitle() {
+  if (currListId.value === "inbox") {
+    pageTitle.value = "Inbox";
+  } else {
+    fetchList(currListId.value);
+    if (list.value) {
+      pageTitle.value = list.value.title;
+    } else {
+      listNotFound.value = true;
+      pageTitle.value = "List not found";
+    }
+  }
+}
+getPageTitle();
+
+// reload list and totos data on route change
+watch(
+  () => route.params.id,
+  async (newId) => {
+    currListId.value = newId;
+    getPageTitle();
+    fetchTodos(currListId.value);
+  }
+);
 
 // add a new list
 const addNewList = (value) => {
@@ -58,7 +71,7 @@ const addNewTodo = (value) => {
     due_date: "",
     notes: "",
     parent_id: "",
-    list_id: route.params.id,
+    list_id: currListId,
   };
   addTodo(newTodo);
 };
@@ -102,7 +115,11 @@ const editItem = (itemId) => {
         </div>
       </div>
     </main>
-    <EditPane v-show="showEditPane" @close-modal="showEditPane = false" />
+    <EditPane
+      v-show="showEditPane"
+      @close-modal="showEditPane = false"
+      :lists="lists"
+    />
   </div>
 </template>
 

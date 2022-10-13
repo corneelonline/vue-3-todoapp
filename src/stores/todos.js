@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { todos } from "../data.js";
-import { useListsStore } from "../stores/lists";
 
 export const useTodosStore = defineStore("todosStore", {
   state: () => ({
@@ -9,12 +8,6 @@ export const useTodosStore = defineStore("todosStore", {
     error: null,
     editMode: false,
   }),
-  getters: {
-    getTodosPerList: (state) => {
-      const listsStore = useListsStore();
-      return state.todos.filter((todo) => todo.listId === listsStore.list.id);
-    },
-  },
   actions: {
     fetchTodos(listId) {
       this.todos = [];

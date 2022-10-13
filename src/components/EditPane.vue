@@ -8,6 +8,13 @@ import TodoToggle from "./form/TodoToggle.vue";
 
 const completed = ref(true);
 
+const props = defineProps({
+  lists: {
+    type: [Object],
+  },
+});
+const lists = ref(props.lists);
+
 const emit = defineEmits(["closeModal"]);
 
 const submitForm = () => {
@@ -73,13 +80,14 @@ const clearDueDate = () => {
               class="todo-description"
               placeholder="Add a note..."
             ></textarea>
+            <pre>{{ lists }}</pre>
           </div>
         </div>
       </fieldset>
       <fieldset class="form__footer">
         <div class="button-group">
           <FormButton class="submit" type="submit">Save</FormButton>
-          <FormButton class="cancel" type="reset" @click="closeModal">
+          <FormButton class="cancel" type="button" @click="closeModal">
             Cancel
           </FormButton>
         </div>
