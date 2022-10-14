@@ -1,6 +1,6 @@
 <script setup>
 // TODO: https://softauthor.com/vue-js-3-composition-api-reusable-scalable-form-validation/
-import { ref, watch, computed } from "vue";
+import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import IconClose from "./icons/IconClose.vue";
 import ModalWindow from "./ModalWindow.vue";
@@ -13,8 +13,6 @@ const todosStore = useTodosStore();
 const { todo } = storeToRefs(todosStore);
 
 const route = useRoute();
-
-const completed = ref(true);
 
 const props = defineProps({
   lists: {
@@ -33,9 +31,20 @@ watch(
   }
 );
 
-const dueDateLocale = computed(() => {
-  return "datum in juiste formaat";
-});
+const dueDateLocale = ref(todo.dueDate);
+
+const onChangeDate = (event) => {
+  console.log(event.target.value);
+  const theDate = new Date(event.target.value);
+  const options = {
+    timeZone: "UTC",
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+  dueDateLocale.value = theDate.toLocaleDateString("nl-NL", options);
+};
 
 const emit = defineEmits(["closeModal"]);
 
@@ -56,8 +65,8 @@ const deleteTodo = () => {
   <ModalWindow>
     <form name="edit-todo" @submit.prevent="submitForm">
       <fieldset class="form__header">
-        <div class="title-field" :class="completed ? 'done' : ''">
-          <TodoToggle v-model:checked="completed" />
+        <div class="title-field" :class="todo.completed ? 'done' : ''">
+          <TodoToggle v-model:checked="todo.completed" />
           <input
             type="text"
             name="title"
@@ -88,6 +97,7 @@ const deleteTodo = () => {
                 type="date"
                 name="todo-date"
                 id="todo-date"
+                @change="onChangeDate($event)"
                 :value="todo.dueDate"
               />
             </div>
@@ -193,20 +203,20 @@ select {
 }
 
 .date-field {
-  border: 1px dotted blue;
+  /* border: 1px dotted blue; */
   flex-grow: 1;
   display: flex;
 }
 
 .date-locale {
-  border: 1px dotted green;
+  border: 1px dotted transparent;
   padding: var(--gutter-xxs) var(--gutter-sm);
   display: block;
   flex-grow: 1;
 }
 
 input[type="date"] {
-  border: 1px dotted red;
+  /* border: 1px dotted red; */
   padding: var(--gutter-xxs) var(--gutter-sm);
   color: var(--color-text-inverted);
   width: 60px;
