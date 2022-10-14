@@ -19,7 +19,7 @@ const currListId = ref({});
 const listNotFound = ref(false);
 
 currListId.value = route.params.id;
-console.log("init currListId: " + currListId.value);
+// console.log("init currListId: " + currListId.value);
 
 const listsStore = useListsStore();
 const { lists, list } = storeToRefs(listsStore);
@@ -27,7 +27,7 @@ const { fetchLists, fetchList, addList } = listsStore;
 fetchLists();
 
 const todosStore = useTodosStore();
-const { todos } = storeToRefs(todosStore);
+const { todos, todo } = storeToRefs(todosStore);
 const { addTodo, fetchTodos, fetchTodo, toggleCompleted, setEditMode } =
   todosStore;
 fetchTodos(currListId.value);
@@ -48,7 +48,7 @@ function getPageTitle() {
 }
 getPageTitle();
 
-// reload list and totos data on route change
+// reload list and todos data on route change
 watch(
   () => route.params.id,
   async (newId) => {
@@ -56,7 +56,6 @@ watch(
     getPageTitle();
     fetchList(currListId.value);
     fetchTodos(currListId.value);
-    console.log("reload currListId: " + currListId.value);
   }
 );
 
@@ -87,7 +86,7 @@ const toggleItem = (itemId) => {
 // open edit pane
 const showEditPane = ref(false);
 const editItem = (itemId) => {
-  console.log("edit currListId: " + currListId.value);
+  console.log("edit itemId: " + itemId);
   fetchTodo(itemId);
   showEditPane.value = true;
   setEditMode(true);
@@ -120,6 +119,7 @@ const editItem = (itemId) => {
       </div>
     </main>
     <EditPane
+      v-if="todo"
       v-show="showEditPane"
       @close-modal="showEditPane = false"
       :lists="lists"

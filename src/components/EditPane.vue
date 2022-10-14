@@ -1,11 +1,16 @@
 <script setup>
-import { ref, watch } from "vue";
+// TODO: https://softauthor.com/vue-js-3-composition-api-reusable-scalable-form-validation/
+import { ref, watch, computed } from "vue";
 import { useRoute } from "vue-router";
 import IconClose from "./icons/IconClose.vue";
-import IconRemove from "./icons/IconRemove.vue";
 import ModalWindow from "./ModalWindow.vue";
 import FormButton from "./form/FormButton.vue";
 import TodoToggle from "./form/TodoToggle.vue";
+import { useTodosStore } from "../stores/todos";
+import { storeToRefs } from "pinia";
+
+const todosStore = useTodosStore();
+const { todo } = storeToRefs(todosStore);
 
 const route = useRoute();
 
@@ -21,14 +26,16 @@ const props = defineProps({
 });
 const lists = ref(props.lists);
 const currListId = ref(props.currListId);
-console.log("prop currListId: " + currListId.value);
 watch(
   () => route.params.id,
   async (newId) => {
     currListId.value = newId;
-    console.log("reload prop currListId: " + currListId.value);
   }
 );
+
+const dueDateLocale = computed(() => {
+  return "datum in juiste formaat";
+});
 
 const emit = defineEmits(["closeModal"]);
 
@@ -43,10 +50,6 @@ const closeModal = () => {
 const deleteTodo = () => {
   console.log("deleteTodo!!");
 };
-
-const clearDueDate = () => {
-  console.log("clearDueDate!!");
-};
 </script>
 
 <template>
@@ -59,7 +62,7 @@ const clearDueDate = () => {
             type="text"
             name="title"
             class="todo-title"
-            value="Lorem ipsum jalalaa"
+            :value="todo.title"
           />
           <FormButton class="icon" type="button" @click="closeModal">
             <IconClose />
@@ -67,7 +70,6 @@ const clearDueDate = () => {
         </div>
       </fieldset>
       <fieldset class="form__body">
-        <p>{{ currListId }}</p>
         <div class="fieldgroup">
           <div class="field">
             <label for="todo-list">List:</label>
@@ -80,20 +82,25 @@ const clearDueDate = () => {
           </div>
           <div class="field">
             <label for="todo-date">Due:</label>
-            <input type="date" name="todo-date" id="todo-date" />
-            <FormButton class="icon" @click="clearDueDate">
-              <IconRemove iconColor="#202020" />
-            </FormButton>
+            <div class="date-field">
+              <span class="date-locale">{{ dueDateLocale }}</span>
+              <input
+                type="date"
+                name="todo-date"
+                id="todo-date"
+                :value="todo.dueDate"
+              />
+            </div>
           </div>
         </div>
         <div class="fieldgroup">
           <div class="field">
             <textarea
-              name="todo-description"
-              class="todo-description"
+              name="todo-notes"
+              class="todo-notes"
               placeholder="Add a note..."
+              :value="todo.notes"
             ></textarea>
-            <pre>{{ lists }}</pre>
           </div>
         </div>
       </fieldset>
@@ -178,16 +185,36 @@ select {
   flex-grow: 1;
   background-color: var(--color-bg-form-select);
   background-image: url("@/assets/images/icon-select.svg");
-  background-position: 97% center;
+  background-position: 95% center;
   background-repeat: no-repeat;
   border: 1px dotted var(--color-bg-form-select);
   border-radius: 4px;
   padding: var(--gutter-xxs) var(--gutter-sm);
 }
 
-input[type="date"] {
+.date-field {
+  border: 1px dotted blue;
   flex-grow: 1;
+  display: flex;
+}
+
+.date-locale {
+  border: 1px dotted green;
   padding: var(--gutter-xxs) var(--gutter-sm);
+  display: block;
+  flex-grow: 1;
+}
+
+input[type="date"] {
+  border: 1px dotted red;
+  padding: var(--gutter-xxs) var(--gutter-sm);
+  color: var(--color-text-inverted);
+  width: 60px;
+  overflow: hidden;
+}
+
+textarea {
+  width: 100%;
 }
 
 textarea::placeholder {
