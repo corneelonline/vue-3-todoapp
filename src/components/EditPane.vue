@@ -1,5 +1,6 @@
 <script setup>
 // TODO: https://softauthor.com/vue-js-3-composition-api-reusable-scalable-form-validation/
+// TODO: move form fields to their own components
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import IconClose from "./icons/IconClose.vue";
@@ -8,6 +9,7 @@ import FormButton from "./form/FormButton.vue";
 import TodoToggle from "./form/TodoToggle.vue";
 import { useTodosStore } from "../stores/todos";
 import { storeToRefs } from "pinia";
+import IconCalendar from "./icons/IconCalendar.vue";
 
 const todosStore = useTodosStore();
 const { todo } = storeToRefs(todosStore);
@@ -93,13 +95,17 @@ const deleteTodo = () => {
             <label for="todo-date">Due:</label>
             <div class="date-field">
               <span class="date-locale">{{ dueDateLocale }}</span>
-              <input
-                type="date"
-                name="todo-date"
-                id="todo-date"
-                @change="onChangeDate($event)"
-                :value="todo.dueDate"
-              />
+              <span class="datepicker-toggle">
+                <span class="datepicker-toggle-button"><IconCalendar /></span>
+                <input
+                  type="date"
+                  name="todo-date"
+                  id="todo-date"
+                  class="datepicker-input"
+                  @change="onChangeDate($event)"
+                  :value="todo.dueDate"
+                />
+              </span>
             </div>
           </div>
         </div>
@@ -207,6 +213,19 @@ select {
   flex-grow: 1;
   display: flex;
 }
+.datepicker-toggle {
+  display: inline-block;
+  position: relative;
+  width: 18px;
+  height: 19px;
+}
+.datepicker-toggle-button {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
 
 .date-locale {
   border: 1px dotted transparent;
@@ -215,13 +234,33 @@ select {
   flex-grow: 1;
 }
 
-input[type="date"] {
-  /* border: 1px dotted red; */
+.datepicker-input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+.datepicker-input::-webkit-calendar-picker-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* input[type="date"] {
   padding: var(--gutter-xxs) var(--gutter-sm);
   color: var(--color-text-inverted);
-  width: 60px;
+  width: 120px;
   overflow: hidden;
-}
+} */
 
 textarea {
   width: 100%;
