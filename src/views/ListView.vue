@@ -19,6 +19,7 @@ const currListId = ref({});
 const listNotFound = ref(false);
 
 currListId.value = route.params.id;
+console.log("init currListId: " + currListId.value);
 
 const listsStore = useListsStore();
 const { lists, list } = storeToRefs(listsStore);
@@ -53,7 +54,9 @@ watch(
   async (newId) => {
     currListId.value = newId;
     getPageTitle();
+    fetchList(currListId.value);
     fetchTodos(currListId.value);
+    console.log("reload currListId: " + currListId.value);
   }
 );
 
@@ -84,9 +87,10 @@ const toggleItem = (itemId) => {
 // open edit pane
 const showEditPane = ref(false);
 const editItem = (itemId) => {
+  console.log("edit currListId: " + currListId.value);
+  fetchTodo(itemId);
   showEditPane.value = true;
   setEditMode(true);
-  fetchTodo(itemId);
 };
 </script>
 
@@ -119,6 +123,7 @@ const editItem = (itemId) => {
       v-show="showEditPane"
       @close-modal="showEditPane = false"
       :lists="lists"
+      :currListId="currListId"
     />
   </div>
 </template>

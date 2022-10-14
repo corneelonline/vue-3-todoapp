@@ -1,10 +1,13 @@
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import IconClose from "./icons/IconClose.vue";
 import IconRemove from "./icons/IconRemove.vue";
 import ModalWindow from "./ModalWindow.vue";
 import FormButton from "./form/FormButton.vue";
 import TodoToggle from "./form/TodoToggle.vue";
+
+const route = useRoute();
 
 const completed = ref(true);
 
@@ -12,8 +15,20 @@ const props = defineProps({
   lists: {
     type: [Object],
   },
+  currListId: {
+    type: String,
+  },
 });
 const lists = ref(props.lists);
+const currListId = ref(props.currListId);
+console.log("prop currListId: " + currListId.value);
+watch(
+  () => route.params.id,
+  async (newId) => {
+    currListId.value = newId;
+    console.log("reload prop currListId: " + currListId.value);
+  }
+);
 
 const emit = defineEmits(["closeModal"]);
 
@@ -22,7 +37,6 @@ const submitForm = () => {
 };
 
 const closeModal = () => {
-  // console.log("closeModal!!");
   emit("closeModal");
 };
 
@@ -53,16 +67,15 @@ const clearDueDate = () => {
         </div>
       </fieldset>
       <fieldset class="form__body">
+        <p>{{ currListId }}</p>
         <div class="fieldgroup">
           <div class="field">
             <label for="todo-list">List:</label>
-            <select name="todo-list" id="todo-list">
-              <option value="1" selected>Inbox</option>
-              <option value="2">Boodschappen</option>
-              <option value="3">Thuis</option>
-              <option value="4">Persoonlijk</option>
-              <option value="5">Werk</option>
-              <option value="6">Nog lezen</option>
+            <select name="todo-list" id="todo-list" v-model="currListId">
+              <option value="inbox">Inbox</option>
+              <option v-for="list in lists" :value="list.id" :key="list.id">
+                {{ list.title }}
+              </option>
             </select>
           </div>
           <div class="field">
