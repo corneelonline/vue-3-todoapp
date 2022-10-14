@@ -1,6 +1,7 @@
 <script setup>
 // TODO: https://softauthor.com/vue-js-3-composition-api-reusable-scalable-form-validation/
 // TODO: move form fields to their own components
+// https://dev.to/codeclown/styling-a-native-date-input-into-a-custom-no-library-datepicker-2in
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import IconClose from "./icons/IconClose.vue";
@@ -10,9 +11,11 @@ import TodoToggle from "./form/TodoToggle.vue";
 import { useTodosStore } from "../stores/todos";
 import { storeToRefs } from "pinia";
 import IconCalendar from "./icons/IconCalendar.vue";
+import IconRemove from "./icons/IconRemove.vue";
 
 const todosStore = useTodosStore();
 const { todo } = storeToRefs(todosStore);
+// console.dir(todo.dueDate.value);
 
 const route = useRoute();
 
@@ -33,22 +36,33 @@ watch(
   }
 );
 
-const dueDateLocale = ref(todo.dueDate);
+const dateOptions = {
+  timeZone: "UTC",
+  weekday: "long",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+};
+const dueDateLocale = ref();
+// console.log(todo.value.dueDate);
+if (todo.value.dueDate) {
+  const theDate = new Date(todo.value.dueDate);
+  dueDateLocale.value = theDate.toLocaleDateString("nl-NL", dateOptions);
+}
 
 const onChangeDate = (event) => {
-  console.log(event.target.value);
+  // console.log(event.target.value);
   const theDate = new Date(event.target.value);
-  const options = {
-    timeZone: "UTC",
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  };
-  dueDateLocale.value = theDate.toLocaleDateString("nl-NL", options);
+  dueDateLocale.value = theDate.toLocaleDateString("nl-NL", dateOptions);
 };
 
 const emit = defineEmits(["closeModal"]);
+
+const clearDueDate = () => {
+  console.log("clearDueDate!!");
+  todo.value.dueDate = "";
+  dueDateLocale.value = "";
+};
 
 const submitForm = () => {
   console.log("SUBMIT!!");
@@ -73,7 +87,7 @@ const deleteTodo = () => {
             type="text"
             name="title"
             class="todo-title"
-            :value="todo.title"
+            v-model="todo.title"
           />
           <FormButton class="icon" type="button" @click="closeModal">
             <IconClose />
@@ -103,10 +117,13 @@ const deleteTodo = () => {
                   id="todo-date"
                   class="datepicker-input"
                   @change="onChangeDate($event)"
-                  :value="todo.dueDate"
+                  v-model="todo.dueDate"
                 />
               </span>
             </div>
+            <span class="clear-date" @click="clearDueDate">
+              <IconRemove />
+            </span>
           </div>
         </div>
         <div class="fieldgroup">
@@ -209,29 +226,32 @@ select {
 }
 
 .date-field {
-  /* border: 1px dotted blue; */
+  /* border: 1px dotted red; */
   flex-grow: 1;
   display: flex;
+  padding: var(--gutter-xxs) var(--gutter-sm);
 }
 .datepicker-toggle {
+  /* border: 1px dotted blue; */
   display: inline-block;
   position: relative;
   width: 18px;
-  height: 19px;
+  height: 24px;
 }
 .datepicker-toggle-button {
   position: absolute;
   left: 0;
-  top: 0;
+  top: 2px;
   width: 100%;
   height: 100%;
 }
 
 .date-locale {
   border: 1px dotted transparent;
-  padding: var(--gutter-xxs) var(--gutter-sm);
+  /* border: 1px dotted green; */
   display: block;
   flex-grow: 1;
+  height: 1.5rem;
 }
 
 .datepicker-input {
@@ -255,12 +275,9 @@ select {
   cursor: pointer;
 }
 
-/* input[type="date"] {
-  padding: var(--gutter-xxs) var(--gutter-sm);
-  color: var(--color-text-inverted);
-  width: 120px;
-  overflow: hidden;
-} */
+.clear-date {
+  display: inline-flex;
+}
 
 textarea {
   width: 100%;
