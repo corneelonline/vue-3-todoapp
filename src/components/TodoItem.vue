@@ -10,6 +10,12 @@ const props = defineProps({
 });
 const item = ref(props.item);
 
+const dueDateLocale = ref();
+if (item.value.dueDate) {
+  const theDate = new Date(item.value.dueDate);
+  dueDateLocale.value = theDate.toLocaleDateString("nl-NL");
+}
+
 const emit = defineEmits(["toggleCompleted", "editTodo"]);
 
 const toggleTodo = () => {
@@ -27,7 +33,7 @@ const editPane = () => {
       <IconUnchecked v-else />
     </span>
     <span class="todo-item__title" @click="editPane">{{ item.title }}</span>
-    <span class="todo-item__date">{{ item.dueDate }}</span>
+    <span class="todo-item__date">{{ dueDateLocale }}</span>
   </div>
 </template>
 
