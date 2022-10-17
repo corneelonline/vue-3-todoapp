@@ -43,16 +43,11 @@ const onChangeDate = (event) => {
   dueDateLocale.value = theDate.toLocaleDateString("nl-NL", dateOptions);
 };
 
-const emit = defineEmits(["closeModal"]);
+const emit = defineEmits(["closeModal", "deleteTodo"]);
 
 const clearDueDate = () => {
-  console.log("clearDueDate!!");
   todo.value.dueDate = "";
   dueDateLocale.value = "";
-};
-
-const submitForm = () => {
-  console.log("SUBMIT!!");
 };
 
 const closeModal = () => {
@@ -60,13 +55,13 @@ const closeModal = () => {
 };
 
 const deleteTodo = () => {
-  console.log("deleteTodo!!");
+  emit("deleteTodo");
 };
 </script>
 
 <template>
   <ModalWindow>
-    <form name="edit-todo" @submit.prevent="submitForm">
+    <form name="edit-todo">
       <fieldset class="form__header">
         <div class="title-field" :class="todo.completed ? 'done' : ''">
           <TodoToggle v-model:checked="todo.completed" />

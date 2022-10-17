@@ -19,7 +19,6 @@ const currListId = ref({});
 const listNotFound = ref(false);
 
 currListId.value = route.params.id;
-// console.log("init currListId: " + currListId.value);
 
 const listsStore = useListsStore();
 const { lists, list } = storeToRefs(listsStore);
@@ -28,8 +27,14 @@ fetchLists();
 
 const todosStore = useTodosStore();
 const { todos, todo } = storeToRefs(todosStore);
-const { addTodo, fetchTodos, fetchTodo, toggleCompleted, setEditMode } =
-  todosStore;
+const {
+  addTodo,
+  fetchTodos,
+  fetchTodo,
+  toggleCompleted,
+  setEditMode,
+  deleteTodo,
+} = todosStore;
 fetchTodos(currListId.value);
 
 // get the title of this list
@@ -83,10 +88,14 @@ const toggleItem = (itemId) => {
   toggleCompleted();
 };
 
+const deleteItem = () => {
+  showEditPane.value = false;
+  deleteTodo();
+};
+
 // open edit pane
 const showEditPane = ref(false);
 const editItem = (itemId) => {
-  console.log("edit itemId: " + itemId);
   fetchTodo(itemId);
   showEditPane.value = true;
   setEditMode(true);
@@ -126,6 +135,7 @@ const closeEditPane = () => {
       v-if="todo"
       v-show="showEditPane"
       @close-modal="closeEditPane"
+      @delete-todo="deleteItem"
       :lists="lists"
       :currListId="currListId"
     />
