@@ -1,47 +1,68 @@
 <script setup>
-import { computed } from "vue";
+import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
 import { v4 as uuid } from "uuid";
-import AppSidebar from "../components/AppSidebar.vue";
-import AddTodo from "../components/AddTodo.vue";
-import TodoItem from "../components/TodoItem.vue";
 import { useSidebarOpen } from "../composables/useSidebarOpen.js";
 import { useListsStore } from "../stores/lists";
 import { useTodosStore } from "../stores/todos";
+import EditPane from "../components/EditPane.vue";
+import AppSidebar from "../components/AppSidebar.vue";
+import AddTodo from "../components/AddTodo.vue";
+import TodoItem from "../components/TodoItem.vue";
 
 const { globalState } = useSidebarOpen();
 
 const route = useRoute();
+const pageTitle = ref();
+const currListId = ref({});
+const listNotFound = ref(false);
 
-// get the lists
+currListId.value = route.params.id;
+
 const listsStore = useListsStore();
-const { list, lists } = storeToRefs(listsStore);
+const { lists, list } = storeToRefs(listsStore);
 const { fetchLists, fetchList, addList } = listsStore;
 fetchLists();
 
+const todosStore = useTodosStore();
+const { todos, todo } = storeToRefs(todosStore);
+const {
+  addTodo,
+  fetchTodos,
+  fetchTodo,
+  toggleCompleted,
+  setEditMode,
+  deleteTodo,
+} = todosStore;
+fetchTodos(currListId.value);
+
 // get the title of this list
-let listNotFound = false;
-const pageTitle = computed(() => {
-  if (route.params.id === "inbox") {
-    return "Inbox";
+function getPageTitle() {
+  if (currListId.value === "inbox") {
+    pageTitle.value = "Inbox";
   } else {
-    fetchList(route.params.id);
+    fetchList(currListId.value);
     if (list.value) {
-      return list.value.title;
+      pageTitle.value = list.value.title;
     } else {
-      listNotFound = true;
-      return "List not found";
+      listNotFound.value = true;
+      pageTitle.value = "List not found";
     }
   }
-});
+}
+getPageTitle();
 
-// get the todos of this list
-const todosStore = useTodosStore();
-const { todos } = storeToRefs(todosStore);
-const { fetchTodos, addTodo, fetchTodo, toggleCompleted, setEditMode } =
-  todosStore;
-fetchTodos(route.params.id);
+// reload list and todos data on route change
+watch(
+  () => route.params.id,
+  async (newId) => {
+    currListId.value = newId;
+    getPageTitle();
+    fetchList(currListId.value);
+    fetchTodos(currListId.value);
+  }
+);
 
 // add a new list
 const addNewList = (value) => {
@@ -57,7 +78,7 @@ const addNewTodo = (value) => {
     due_date: "",
     notes: "",
     parent_id: "",
-    list_id: route.params.id,
+    list_id: currListId,
   };
   addTodo(newTodo);
 };
@@ -67,10 +88,21 @@ const toggleItem = (itemId) => {
   toggleCompleted();
 };
 
+const deleteItem = () => {
+  showEditPane.value = false;
+  deleteTodo();
+};
+
 // open edit pane
+const showEditPane = ref(false);
 const editItem = (itemId) => {
-  setEditMode(true);
   fetchTodo(itemId);
+  showEditPane.value = true;
+  setEditMode(true);
+};
+const closeEditPane = () => {
+  showEditPane.value = false;
+  fetchTodos(currListId.value);
 };
 </script>
 
@@ -99,6 +131,14 @@ const editItem = (itemId) => {
         </div>
       </div>
     </main>
+    <EditPane
+      v-if="todo"
+      v-show="showEditPane"
+      @close-modal="closeEditPane"
+      @delete-todo="deleteItem"
+      :lists="lists"
+      :currListId="currListId"
+    />
   </div>
 </template>
 

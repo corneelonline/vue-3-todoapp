@@ -99,7 +99,7 @@ export const todos = [
     title: "In porta massa mattis",
     completed: false,
     dueDate: "2022-11-24",
-    notes: "",
+    notes: "This is a small description of this todo item.",
     parentId: "",
     listId: "63b69fc6-3a79-11ed-b15c-ebf50007dd32",
   },
