@@ -25,6 +25,10 @@ export const useTodosStore = defineStore("todosStore", {
         this.error = error;
       }
     },
+    fetchTodosOfToday() {
+      const currentDate = new Date().toJSON().slice(0, 10);
+      this.todos = [...todos].filter((todo) => todo.dueDate === currentDate);
+    },
     clearTodo() {
       this.todo = null;
     },

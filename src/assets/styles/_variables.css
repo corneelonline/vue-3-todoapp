@@ -63,6 +63,7 @@
   --color-bg-button-primary: var(--color-blue);
   --color-bg-button-secondary: var(--color-gray-500);
   --color-bg-button-warning: var(--color-red-700);
+  --color-bg-todo-label: var(--color-gray-700);
 
   --color-text-main: var(--color-black);
   --color-text-inverted: var(--color-white);

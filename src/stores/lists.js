@@ -12,6 +12,11 @@ export const useListsStore = defineStore("list", {
     getAll(state) {
       return state.lists;
     },
+    getByListId(state) {
+      return (id) => {
+        state.lists.filter((list) => list.id === id).pop();
+      };
+    },
   },
   actions: {
     fetchLists() {

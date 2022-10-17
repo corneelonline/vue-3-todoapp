@@ -16,6 +16,8 @@ if (item.value.dueDate) {
   dueDateLocale.value = theDate.toLocaleDateString("nl-NL");
 }
 
+let currListTitle = "Test";
+
 const emit = defineEmits(["toggleCompleted", "editTodo"]);
 
 const toggleTodo = () => {
@@ -33,6 +35,7 @@ const editPane = () => {
       <IconUnchecked v-else />
     </span>
     <span class="todo-item__title" @click="editPane">{{ item.title }}</span>
+    <span class="todo-item__list">{{ currListTitle }}</span>
     <span class="todo-item__date">{{ dueDateLocale }}</span>
   </div>
 </template>
@@ -67,6 +70,14 @@ const editPane = () => {
 .todo-item__date {
   font-size: 13px;
   color: var(--color-text-highlighted);
+}
+
+.todo-item__list {
+  background-color: var(--color-bg-todo-label);
+  color: var(--color-text-inverted);
+  font-size: 75%;
+  padding: 2px var(--gutter-xxs);
+  border-radius: 2px;
 }
 
 .todo-item.completed {

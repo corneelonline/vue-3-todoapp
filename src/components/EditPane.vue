@@ -19,9 +19,6 @@ const props = defineProps({
   lists: {
     type: [Object],
   },
-  currListId: {
-    type: String,
-  },
 });
 const lists = ref(props.lists);
 
