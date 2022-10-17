@@ -205,13 +205,11 @@ select {
 }
 
 .date-field {
-  /* border: 1px dotted red; */
   flex-grow: 1;
   display: flex;
   padding: var(--gutter-xxs) var(--gutter-sm);
 }
 .datepicker-toggle {
-  /* border: 1px dotted blue; */
   display: inline-block;
   position: relative;
   width: 18px;
@@ -227,7 +225,6 @@ select {
 
 .date-locale {
   border: 1px dotted transparent;
-  /* border: 1px dotted green; */
   display: block;
   flex-grow: 1;
   height: 1.5rem;
