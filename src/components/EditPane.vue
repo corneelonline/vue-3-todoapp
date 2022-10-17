@@ -2,8 +2,7 @@
 // TODO: https://softauthor.com/vue-js-3-composition-api-reusable-scalable-form-validation/
 // TODO: move form fields to their own components
 // https://dev.to/codeclown/styling-a-native-date-input-into-a-custom-no-library-datepicker-2in
-import { ref, watch } from "vue";
-import { useRoute } from "vue-router";
+import { ref } from "vue";
 import IconClose from "./icons/IconClose.vue";
 import ModalWindow from "./ModalWindow.vue";
 import FormButton from "./form/FormButton.vue";
@@ -15,9 +14,6 @@ import IconRemove from "./icons/IconRemove.vue";
 
 const todosStore = useTodosStore();
 const { todo } = storeToRefs(todosStore);
-// console.dir(todo.dueDate.value);
-
-const route = useRoute();
 
 const props = defineProps({
   lists: {
@@ -28,13 +24,6 @@ const props = defineProps({
   },
 });
 const lists = ref(props.lists);
-const currListId = ref(props.currListId);
-watch(
-  () => route.params.id,
-  async (newId) => {
-    currListId.value = newId;
-  }
-);
 
 const dateOptions = {
   timeZone: "UTC",
@@ -44,14 +33,12 @@ const dateOptions = {
   day: "numeric",
 };
 const dueDateLocale = ref();
-// console.log(todo.value.dueDate);
 if (todo.value.dueDate) {
   const theDate = new Date(todo.value.dueDate);
   dueDateLocale.value = theDate.toLocaleDateString("nl-NL", dateOptions);
 }
 
 const onChangeDate = (event) => {
-  // console.log(event.target.value);
   const theDate = new Date(event.target.value);
   dueDateLocale.value = theDate.toLocaleDateString("nl-NL", dateOptions);
 };
@@ -98,7 +85,7 @@ const deleteTodo = () => {
         <div class="fieldgroup">
           <div class="field">
             <label for="todo-list">List:</label>
-            <select name="todo-list" id="todo-list" v-model="currListId">
+            <select name="todo-list" id="todo-list" v-model="todo.listId">
               <option value="inbox">Inbox</option>
               <option v-for="list in lists" :value="list.id" :key="list.id">
                 {{ list.title }}
@@ -132,18 +119,15 @@ const deleteTodo = () => {
               name="todo-notes"
               class="todo-notes"
               placeholder="Add a note..."
-              :value="todo.notes"
+              v-model="todo.notes"
             ></textarea>
           </div>
         </div>
       </fieldset>
       <fieldset class="form__footer">
-        <div class="button-group">
-          <FormButton class="submit" type="submit">Save</FormButton>
-          <FormButton class="cancel" type="button" @click="closeModal">
-            Cancel
-          </FormButton>
-        </div>
+        <FormButton class="close" type="button" @click="closeModal">
+          Close
+        </FormButton>
         <FormButton class="delete" type="button" @click.prevent="deleteTodo">
           Delete
         </FormButton>

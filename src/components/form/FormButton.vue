@@ -28,7 +28,8 @@ button.submit {
   background-color: var(--color-bg-button-primary);
   color: var(--color-text-inverted);
 }
-button.cancel {
+button.cancel,
+button.close {
   background-color: var(--color-bg-button-secondary);
 }
 button.delete {

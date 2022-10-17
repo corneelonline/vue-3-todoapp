@@ -91,6 +91,10 @@ const editItem = (itemId) => {
   showEditPane.value = true;
   setEditMode(true);
 };
+const closeEditPane = () => {
+  showEditPane.value = false;
+  fetchTodos(currListId.value);
+};
 </script>
 
 <template>
@@ -121,7 +125,7 @@ const editItem = (itemId) => {
     <EditPane
       v-if="todo"
       v-show="showEditPane"
-      @close-modal="showEditPane = false"
+      @close-modal="closeEditPane"
       :lists="lists"
       :currListId="currListId"
     />
