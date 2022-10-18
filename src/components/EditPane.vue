@@ -57,7 +57,7 @@ const deleteTodo = () => {
 </script>
 
 <template>
-  <ModalWindow>
+  <ModalWindow @close="closeModal">
     <form name="edit-todo">
       <fieldset class="form__header">
         <div class="title-field" :class="todo.completed ? 'done' : ''">
