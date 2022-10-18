@@ -7,6 +7,10 @@ const props = defineProps({
   item: {
     type: Object,
   },
+  listTitle: {
+    type: String,
+    default: "",
+  },
 });
 const item = ref(props.item);
 
@@ -16,7 +20,7 @@ if (item.value.dueDate) {
   dueDateLocale.value = theDate.toLocaleDateString("nl-NL");
 }
 
-let currListTitle = "Test";
+// let currListTitle = "Test";
 
 const emit = defineEmits(["toggleCompleted", "editTodo"]);
 
@@ -35,7 +39,7 @@ const editPane = () => {
       <IconUnchecked v-else />
     </span>
     <span class="todo-item__title" @click="editPane">{{ item.title }}</span>
-    <span class="todo-item__list">{{ currListTitle }}</span>
+    <span v-if="listTitle" class="todo-item__list">{{ listTitle }}</span>
     <span class="todo-item__date">{{ dueDateLocale }}</span>
   </div>
 </template>

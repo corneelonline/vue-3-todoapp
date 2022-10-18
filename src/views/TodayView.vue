@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from "vue";
-import { useRoute } from "vue-router";
+import { ref, computed } from "vue";
+// import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
 import { v4 as uuid } from "uuid";
 import { useSidebarOpen } from "../composables/useSidebarOpen.js";
@@ -13,11 +13,11 @@ import TodoItem from "../components/TodoItem.vue";
 
 const { globalState } = useSidebarOpen();
 
-const route = useRoute();
-const currListId = ref({});
-const listNotFound = ref(false);
+// const route = useRoute();
+// const currListId = ref({});
+// const listNotFound = ref(false);
 
-currListId.value = route.params.id;
+// currListId.value = route.params.id;
 
 const listsStore = useListsStore();
 const { lists } = storeToRefs(listsStore);
@@ -38,14 +38,17 @@ const addNewList = (value) => {
 
 // add a new todo
 const addNewTodo = (value) => {
+  const today = new Date().toLocaleDateString("en-CA");
+  // today.toISOString().split("T")[0];
+  console.log("today = " + today);
   const newTodo = {
     id: uuid(),
     title: value,
     completed: false,
-    due_date: "",
+    dueDate: today,
     notes: "",
     parent_id: "",
-    list_id: currListId,
+    list_id: "inbox",
   };
   addTodo(newTodo);
 };
@@ -71,16 +74,18 @@ const closeEditPane = () => {
   showEditPane.value = false;
   fetchTodosOfToday();
 };
+
+const listTitle = (listId) => {
+  const theList = lists.value.filter((list) => list.id === listId).pop();
+  return theList.title;
+};
 </script>
 
 <template>
   <div class="wrapper" :class="globalState ? 'sidebar-open' : 'sidebar-closed'">
     <AppSidebar :lists="lists" @newList="addNewList" />
     <main id="main">
-      <div v-if="listNotFound" class="warning">
-        The list you are looking for cannot be found.
-      </div>
-      <div v-else class="main-content">
+      <div class="main-content">
         <header>
           <h1>Today</h1>
         </header>
@@ -91,6 +96,7 @@ const closeEditPane = () => {
               v-for="item in todos"
               :key="item.id"
               :item="item"
+              :listTitle="listTitle(item.listId)"
               @toggleCompleted="toggleItem"
               @editTodo="editItem"
             />
