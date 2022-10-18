@@ -20,8 +20,6 @@ if (item.value.dueDate) {
   dueDateLocale.value = theDate.toLocaleDateString("nl-NL");
 }
 
-// let currListTitle = "Test";
-
 const emit = defineEmits(["toggleCompleted", "editTodo"]);
 
 const toggleTodo = () => {

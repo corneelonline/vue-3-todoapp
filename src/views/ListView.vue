@@ -17,6 +17,7 @@ const route = useRoute();
 const pageTitle = ref();
 const currListId = ref({});
 const listNotFound = ref(false);
+const editPaneKey = ref(0);
 
 currListId.value = route.params.id;
 
@@ -75,12 +76,12 @@ const addNewTodo = (value) => {
     id: uuid(),
     title: value,
     completed: false,
-    due_date: "",
+    dueDate: "",
     notes: "",
-    parent_id: "",
-    list_id: currListId,
+    listId: currListId.value,
   };
   addTodo(newTodo);
+  editPaneKey.value += 1;
 };
 
 const toggleItem = (itemId) => {
@@ -96,6 +97,7 @@ const deleteItem = () => {
 // open edit pane
 const showEditPane = ref(false);
 const editItem = (itemId) => {
+  console.log("list editItem: " + itemId);
   fetchTodo(itemId);
   showEditPane.value = true;
   setEditMode(true);
@@ -138,6 +140,7 @@ const closeEditPane = () => {
       @delete-todo="deleteItem"
       :lists="lists"
       :currListId="currListId"
+      :key="editPaneKey"
     />
   </div>
 </template>

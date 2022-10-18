@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref } from "vue";
 // import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
 import { v4 as uuid } from "uuid";
@@ -13,11 +13,7 @@ import TodoItem from "../components/TodoItem.vue";
 
 const { globalState } = useSidebarOpen();
 
-// const route = useRoute();
-// const currListId = ref({});
-// const listNotFound = ref(false);
-
-// currListId.value = route.params.id;
+const editPaneKey = ref(0);
 
 const listsStore = useListsStore();
 const { lists } = storeToRefs(listsStore);
@@ -39,18 +35,16 @@ const addNewList = (value) => {
 // add a new todo
 const addNewTodo = (value) => {
   const today = new Date().toLocaleDateString("en-CA");
-  // today.toISOString().split("T")[0];
-  console.log("today = " + today);
   const newTodo = {
     id: uuid(),
     title: value,
     completed: false,
     dueDate: today,
     notes: "",
-    parent_id: "",
-    list_id: "inbox",
+    listId: "inbox",
   };
   addTodo(newTodo);
+  editPaneKey.value += 1;
 };
 
 const toggleItem = (itemId) => {
@@ -75,9 +69,13 @@ const closeEditPane = () => {
   fetchTodosOfToday();
 };
 
-const listTitle = (listId) => {
+const getListTitle = (listId) => {
   const theList = lists.value.filter((list) => list.id === listId).pop();
-  return theList.title;
+  if (theList !== undefined) {
+    return theList.title;
+  } else {
+    return "inbox";
+  }
 };
 </script>
 
@@ -96,7 +94,7 @@ const listTitle = (listId) => {
               v-for="item in todos"
               :key="item.id"
               :item="item"
-              :listTitle="listTitle(item.listId)"
+              :listTitle="getListTitle(item.listId)"
               @toggleCompleted="toggleItem"
               @editTodo="editItem"
             />
@@ -110,6 +108,7 @@ const listTitle = (listId) => {
       @close-modal="closeEditPane"
       @delete-todo="deleteItem"
       :lists="lists"
+      :key="editPaneKey"
     />
   </div>
 </template>
