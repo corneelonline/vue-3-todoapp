@@ -27,7 +27,7 @@ const { fetchLists, fetchList, addList } = listsStore;
 fetchLists();
 
 const todosStore = useTodosStore();
-const { todos, todo } = storeToRefs(todosStore);
+const { todo, todosOpen, todosClosed } = storeToRefs(todosStore);
 const {
   addTodo,
   fetchTodos,
@@ -87,6 +87,7 @@ const addNewTodo = (value) => {
 const toggleItem = (itemId) => {
   fetchTodo(itemId);
   toggleCompleted();
+  fetchTodos(currListId.value);
 };
 
 const deleteItem = () => {
@@ -97,7 +98,6 @@ const deleteItem = () => {
 // open edit pane
 const showEditPane = ref(false);
 const editItem = (itemId) => {
-  console.log("list editItem: " + itemId);
   fetchTodo(itemId);
   showEditPane.value = true;
   setEditMode(true);
@@ -123,7 +123,19 @@ const closeEditPane = () => {
           <div class="todo-items">
             <AddTodo @newTodo="addNewTodo" />
             <TodoItem
-              v-for="item in todos"
+              v-for="item in todosOpen"
+              :key="item.id"
+              :item="item"
+              @toggleCompleted="toggleItem"
+              @editTodo="editItem"
+            />
+          </div>
+          <div class="todo-items">
+            <div class="completed-count">
+              Items completed: {{ todosClosed.length }}
+            </div>
+            <TodoItem
+              v-for="item in todosClosed"
               :key="item.id"
               :item="item"
               @toggleCompleted="toggleItem"
@@ -166,5 +178,19 @@ const closeEditPane = () => {
 
 h1 {
   font-size: 1.5rem;
+}
+
+.todo-items {
+  margin-bottom: var(--gutter-md);
+}
+.completed-count {
+  display: inline-block;
+  color: var(--color-text-inverted);
+  background-color: var(--color-bg-dark);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  opacity: 0.6;
+  padding: var(--gutter-xxs) var(--gutter-xs);
+  margin-bottom: var(--gutter-sm);
 }
 </style>
