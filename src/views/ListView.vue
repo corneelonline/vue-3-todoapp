@@ -10,6 +10,7 @@ import EditPane from "../components/EditPane.vue";
 import AppSidebar from "../components/AppSidebar.vue";
 import AddTodo from "../components/AddTodo.vue";
 import TodoItem from "../components/TodoItem.vue";
+import CompletedCount from "../components/CompletedCount.vue";
 
 const { globalState } = useSidebarOpen();
 
@@ -131,9 +132,7 @@ const closeEditPane = () => {
             />
           </div>
           <div class="todo-items">
-            <div class="completed-count">
-              Items completed: {{ todosClosed.length }}
-            </div>
+            <CompletedCount :count="todosClosed.length" />
             <TodoItem
               v-for="item in todosClosed"
               :key="item.id"
@@ -182,15 +181,5 @@ h1 {
 
 .todo-items {
   margin-bottom: var(--gutter-md);
-}
-.completed-count {
-  display: inline-block;
-  color: var(--color-text-inverted);
-  background-color: var(--color-bg-dark);
-  border: 1px solid transparent;
-  border-radius: 4px;
-  opacity: 0.6;
-  padding: var(--gutter-xxs) var(--gutter-xs);
-  margin-bottom: var(--gutter-sm);
 }
 </style>
