@@ -2,9 +2,8 @@
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
-import { v4 as uuid } from "uuid";
 import { useSidebarOpen } from "../composables/useSidebarOpen.js";
-import { useListsStore } from "../stores/lists";
+import { useListStore } from "../stores/ListStore";
 import { useTodosStore } from "../stores/todos";
 import EditPane from "../components/EditPane.vue";
 import AppSidebar from "../components/AppSidebar.vue";
@@ -22,10 +21,11 @@ const editPaneKey = ref(0);
 
 currListId.value = route.params.id;
 
-const listsStore = useListsStore();
-const { lists, list } = storeToRefs(listsStore);
-const { fetchLists, fetchList, addList } = listsStore;
-fetchLists();
+const listStore = useListStore();
+listStore.fetchLists();
+// const { lists, list } = storeToRefs(listsStore);
+// const { fetchLists, fetchList, addList } = listsStore;
+// fetchLists();
 
 const todosStore = useTodosStore();
 const { todo, todosOpen, todosClosed } = storeToRefs(todosStore);
@@ -44,9 +44,9 @@ function getPageTitle() {
   if (currListId.value === "inbox") {
     pageTitle.value = "Inbox";
   } else {
-    fetchList(currListId.value);
-    if (list.value) {
-      pageTitle.value = list.value.title;
+    listStore.setCurrentList(currListId.value);
+    if (listStore.currentList) {
+      pageTitle.value = listStore.currentList.title;
     } else {
       listNotFound.value = true;
       pageTitle.value = "List not found";
@@ -61,27 +61,19 @@ watch(
   async (newId) => {
     currListId.value = newId;
     getPageTitle();
-    fetchList(currListId.value);
+    // listStore.setCurrentList(currListId.value);
     fetchTodos(currListId.value);
   }
 );
 
 // add a new list
 const addNewList = (value) => {
-  addList(value);
+  listStore.addList(value);
 };
 
 // add a new todo
 const addNewTodo = (value) => {
-  const newTodo = {
-    id: uuid(),
-    title: value,
-    completed: false,
-    dueDate: "",
-    notes: "",
-    listId: currListId.value,
-  };
-  addTodo(newTodo);
+  addTodo(value, currListId.value);
   editPaneKey.value += 1;
 };
 
@@ -111,7 +103,7 @@ const closeEditPane = () => {
 
 <template>
   <div class="wrapper" :class="globalState ? 'sidebar-open' : 'sidebar-closed'">
-    <AppSidebar :lists="lists" @newList="addNewList" />
+    <AppSidebar :lists="listStore.lists" @newList="addNewList" />
     <main id="main">
       <div v-if="listNotFound" class="warning">
         The list you are looking for cannot be found.

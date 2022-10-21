@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { v4 as uuid } from "uuid";
 import { todos } from "../data.js";
 
 export const useTodosStore = defineStore("todosStore", {
@@ -45,8 +46,15 @@ export const useTodosStore = defineStore("todosStore", {
     clearTodo() {
       this.todo = null;
     },
-    addTodo(todo) {
-      this.todos.push(todo);
+    addTodo(title, listId) {
+      this.todos.push({
+        id: uuid(),
+        title: title,
+        completed: false,
+        dueDate: "",
+        notes: "",
+        listId: listId,
+      });
     },
     toggleCompleted() {
       if (this.todo.completed === true) {
