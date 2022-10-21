@@ -14,18 +14,16 @@ import CompletedCount from "../components/CompletedCount.vue";
 const { globalState } = useSidebarOpen();
 
 const route = useRoute();
-const pageTitle = ref();
 const currListId = ref({});
 const listNotFound = ref(false);
 const editPaneKey = ref(0);
 
 currListId.value = route.params.id;
+// console.log(currListId.value);
 
 const listStore = useListStore();
 listStore.fetchLists();
-// const { lists, list } = storeToRefs(listsStore);
-// const { fetchLists, fetchList, addList } = listsStore;
-// fetchLists();
+listStore.setCurrentList(currListId.value);
 
 const todosStore = useTodosStore();
 const { todo, todosOpen, todosClosed } = storeToRefs(todosStore);
@@ -39,29 +37,13 @@ const {
 } = todosStore;
 fetchTodos(currListId.value);
 
-// get the title of this list
-function getPageTitle() {
-  if (currListId.value === "inbox") {
-    pageTitle.value = "Inbox";
-  } else {
-    listStore.setCurrentList(currListId.value);
-    if (listStore.currentList) {
-      pageTitle.value = listStore.currentList.title;
-    } else {
-      listNotFound.value = true;
-      pageTitle.value = "List not found";
-    }
-  }
-}
-getPageTitle();
-
 // reload list and todos data on route change
 watch(
   () => route.params.id,
   async (newId) => {
     currListId.value = newId;
-    getPageTitle();
-    // listStore.setCurrentList(currListId.value);
+    // console.log(currListId.value);
+    listStore.setCurrentList(currListId.value);
     fetchTodos(currListId.value);
   }
 );
@@ -106,11 +88,17 @@ const closeEditPane = () => {
     <AppSidebar :lists="listStore.lists" @newList="addNewList" />
     <main id="main">
       <div v-if="listNotFound" class="warning">
-        The list you are looking for cannot be found.
+        <header>
+          <h1>List not found</h1>
+        </header>
+        <p>
+          The list you are looking for cannot be found. Please check if the URL
+          is correct and try again.
+        </p>
       </div>
       <div v-else class="main-content">
         <header>
-          <h1>{{ pageTitle }}</h1>
+          <h1>{{ listStore.currentListTitle }}</h1>
         </header>
         <div class="todo-main">
           <div class="todo-items">

@@ -8,16 +8,19 @@ export const useListStore = defineStore("ListStore", {
       currentList: {},
     };
   },
+  getters: {
+    currentListTitle: (state) => state.currentList.title,
+  },
   actions: {
     async fetchLists() {
-      this.lists = (await import("@/data/lists.json")).default;
+      this.lists = [...(await import("@/data/lists.json")).default];
     },
     setCurrentList(id) {
-      this.currentList = null;
-      try {
-        this.list = this.lists.filter((list) => list.id === id).pop();
-      } catch (error) {
-        this.error = error;
+      console.log("setCurrentList: " + id);
+      if (id === "inbox") {
+        this.currentList = { id: id, title: "Inbox" };
+      } else {
+        this.currentList = this.lists.filter((list) => list.id === id).pop();
       }
     },
     addList(title) {
