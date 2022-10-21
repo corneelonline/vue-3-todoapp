@@ -19,11 +19,11 @@ const listNotFound = ref(false);
 const editPaneKey = ref(0);
 
 currListId.value = route.params.id;
-// console.log(currListId.value);
 
 const listStore = useListStore();
-listStore.fetchLists();
-listStore.setCurrentList(currListId.value);
+listStore.fetchLists().then(() => {
+  listStore.setCurrentList(currListId.value);
+});
 
 const todosStore = useTodosStore();
 const { todo, todosOpen, todosClosed } = storeToRefs(todosStore);
@@ -42,7 +42,6 @@ watch(
   () => route.params.id,
   async (newId) => {
     currListId.value = newId;
-    // console.log(currListId.value);
     listStore.setCurrentList(currListId.value);
     fetchTodos(currListId.value);
   }

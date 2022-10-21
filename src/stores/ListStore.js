@@ -13,10 +13,9 @@ export const useListStore = defineStore("ListStore", {
   },
   actions: {
     async fetchLists() {
-      this.lists = [...(await import("@/data/lists.json")).default];
+      this.lists = (await import("@/data/lists.json")).default;
     },
     setCurrentList(id) {
-      console.log("setCurrentList: " + id);
       if (id === "inbox") {
         this.currentList = { id: id, title: "Inbox" };
       } else {
