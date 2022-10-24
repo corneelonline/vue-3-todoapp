@@ -2,49 +2,27 @@
 // TODO: https://softauthor.com/vue-js-3-composition-api-reusable-scalable-form-validation/
 // TODO: move form fields to their own components
 // https://dev.to/codeclown/styling-a-native-date-input-into-a-custom-no-library-datepicker-2in
-import { ref } from "vue";
 import IconClose from "./icons/IconClose.vue";
 import ModalWindow from "./ModalWindow.vue";
 import FormButton from "./form/FormButton.vue";
 import TodoToggle from "./form/TodoToggle.vue";
-import { useTodosStore } from "../stores/todos";
+import { useTodoStore } from "../stores/TodoStore";
 import { storeToRefs } from "pinia";
 import IconCalendar from "./icons/IconCalendar.vue";
 import IconRemove from "./icons/IconRemove.vue";
 
-const todosStore = useTodosStore();
-const { todo } = storeToRefs(todosStore);
+const todoStore = useTodoStore();
+const { currentTodo, currentDateLong } = storeToRefs(todoStore);
 
+// eslint-disable-next-line no-unused-vars
 const props = defineProps({
-  lists: {
-    type: [Object],
-  },
+  lists: [Object],
 });
-const lists = ref(props.lists);
-
-const dateOptions = {
-  timeZone: "UTC",
-  weekday: "long",
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-};
-const dueDateLocale = ref();
-if (todo.value.dueDate) {
-  const theDate = new Date(todo.value.dueDate);
-  dueDateLocale.value = theDate.toLocaleDateString("nl-NL", dateOptions);
-}
-
-const onChangeDate = (event) => {
-  const theDate = new Date(event.target.value);
-  dueDateLocale.value = theDate.toLocaleDateString("nl-NL", dateOptions);
-};
 
 const emit = defineEmits(["closeModal", "deleteTodo"]);
 
 const clearDueDate = () => {
-  todo.value.dueDate = "";
-  dueDateLocale.value = "";
+  currentTodo.value.dueDate = "";
 };
 
 const closeModal = () => {
@@ -60,13 +38,14 @@ const deleteTodo = () => {
   <ModalWindow @close="closeModal">
     <form name="edit-todo">
       <fieldset class="form__header">
-        <div class="title-field" :class="todo.completed ? 'done' : ''">
-          <TodoToggle v-model:checked="todo.completed" />
+        <div class="title-field" :class="currentTodo.completed ? 'done' : ''">
+          <TodoToggle v-model:checked="currentTodo.completed" />
           <input
             type="text"
             name="title"
             class="todo-title"
-            v-model="todo.title"
+            v-model="currentTodo.title"
+            required
           />
           <FormButton class="icon" type="button" @click="closeModal">
             <IconClose />
@@ -77,7 +56,11 @@ const deleteTodo = () => {
         <div class="fieldgroup">
           <div class="field">
             <label for="todo-list">List:</label>
-            <select name="todo-list" id="todo-list" v-model="todo.listId">
+            <select
+              name="todo-list"
+              id="todo-list"
+              v-model="currentTodo.listId"
+            >
               <option value="inbox">Inbox</option>
               <option v-for="list in lists" :value="list.id" :key="list.id">
                 {{ list.title }}
@@ -85,9 +68,9 @@ const deleteTodo = () => {
             </select>
           </div>
           <div class="field">
-            <label for="todo-date">Due:</label>
+            <label for="todo-duedate">Due:</label>
             <div class="date-field">
-              <span class="date-locale">{{ dueDateLocale }}</span>
+              <span class="date-locale">{{ currentDateLong }}</span>
               <span class="datepicker-toggle">
                 <span class="datepicker-toggle-button"><IconCalendar /></span>
                 <input
@@ -95,8 +78,7 @@ const deleteTodo = () => {
                   name="todo-date"
                   id="todo-date"
                   class="datepicker-input"
-                  @change="onChangeDate($event)"
-                  v-model="todo.dueDate"
+                  v-model="currentTodo.dueDate"
                 />
               </span>
             </div>
@@ -111,7 +93,7 @@ const deleteTodo = () => {
               name="todo-notes"
               class="todo-notes"
               placeholder="Add a note..."
-              v-model="todo.notes"
+              v-model="currentTodo.notes"
             ></textarea>
           </div>
         </div>

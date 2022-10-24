@@ -1,10 +1,9 @@
 <script setup>
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { storeToRefs } from "pinia";
 import { useSidebarOpen } from "../composables/useSidebarOpen.js";
 import { useListStore } from "../stores/ListStore";
-import { useTodosStore } from "../stores/todos";
+import { useTodoStore } from "../stores/TodoStore";
 import EditPane from "../components/EditPane.vue";
 import AppSidebar from "../components/AppSidebar.vue";
 import AddTodo from "../components/AddTodo.vue";
@@ -25,17 +24,8 @@ listStore.fetchLists().then(() => {
   listStore.setCurrentList(currListId.value);
 });
 
-const todosStore = useTodosStore();
-const { todo, todosOpen, todosClosed } = storeToRefs(todosStore);
-const {
-  addTodo,
-  fetchTodos,
-  fetchTodo,
-  toggleCompleted,
-  setEditMode,
-  deleteTodo,
-} = todosStore;
-fetchTodos(currListId.value);
+const todoStore = useTodoStore();
+todoStore.fetchTodos(currListId.value);
 
 // reload list and todos data on route change
 watch(
@@ -43,42 +33,39 @@ watch(
   async (newId) => {
     currListId.value = newId;
     listStore.setCurrentList(currListId.value);
-    fetchTodos(currListId.value);
+    todoStore.fetchTodos(currListId.value);
   }
 );
 
-// add a new list
 const addNewList = (value) => {
   listStore.addList(value);
 };
 
-// add a new todo
 const addNewTodo = (value) => {
-  addTodo(value, currListId.value);
+  todoStore.addTodo(value, currListId.value);
   editPaneKey.value += 1;
 };
 
 const toggleItem = (itemId) => {
-  fetchTodo(itemId);
-  toggleCompleted();
-  fetchTodos(currListId.value);
+  // console.log("itemId: " + itemId);
+  todoStore.setCurrenTodo(itemId);
+  todoStore.toggleCompleted();
+  todoStore.fetchTodos(currListId.value);
 };
 
 const deleteItem = () => {
-  showEditPane.value = false;
-  deleteTodo();
+  todoStore.setEditMode(false);
+  todoStore.deleteTodo();
 };
 
-// open edit pane
-const showEditPane = ref(false);
 const editItem = (itemId) => {
-  fetchTodo(itemId);
-  showEditPane.value = true;
-  setEditMode(true);
+  todoStore.setCurrenTodo(itemId);
+  todoStore.setEditMode(true);
 };
+
 const closeEditPane = () => {
-  showEditPane.value = false;
-  fetchTodos(currListId.value);
+  todoStore.setEditMode(false);
+  todoStore.fetchTodos(currListId.value);
 };
 </script>
 
@@ -103,17 +90,17 @@ const closeEditPane = () => {
           <div class="todo-items">
             <AddTodo @newTodo="addNewTodo" />
             <TodoItem
-              v-for="item in todosOpen"
+              v-for="item in todoStore.todosOpen"
               :key="item.id"
               :item="item"
               @toggleCompleted="toggleItem"
               @editTodo="editItem"
             />
           </div>
-          <div class="todo-items">
-            <CompletedCount :count="todosClosed.length" />
+          <div v-if="todoStore.todosClosed.length" class="todo-items">
+            <CompletedCount :count="todoStore.todosClosed.length" />
             <TodoItem
-              v-for="item in todosClosed"
+              v-for="item in todoStore.todosClosed"
               :key="item.id"
               :item="item"
               @toggleCompleted="toggleItem"
@@ -124,12 +111,11 @@ const closeEditPane = () => {
       </div>
     </main>
     <EditPane
-      v-if="todo"
-      v-show="showEditPane"
+      v-if="todoStore.currentTodo"
+      v-show="todoStore.editMode"
       @close-modal="closeEditPane"
       @delete-todo="deleteItem"
-      :lists="lists"
-      :currListId="currListId"
+      :lists="listStore.lists"
       :key="editPaneKey"
     />
   </div>
