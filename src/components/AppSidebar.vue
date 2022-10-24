@@ -12,9 +12,7 @@ const props = defineProps({
     type: [Object],
   },
 });
-const lists = ref(props.lists);
 
-// add a new todo
 const input = ref("");
 
 const emit = defineEmits(["newList"]);

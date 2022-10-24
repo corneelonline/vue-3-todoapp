@@ -1,11 +1,9 @@
 <script setup>
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { storeToRefs } from "pinia";
-import { v4 as uuid } from "uuid";
 import { useSidebarOpen } from "../composables/useSidebarOpen.js";
-import { useListsStore } from "../stores/lists";
-import { useTodosStore } from "../stores/todos";
+import { useListStore } from "../stores/ListStore";
+import { useTodoStore } from "../stores/TodoStore";
 import EditPane from "../components/EditPane.vue";
 import AppSidebar from "../components/AppSidebar.vue";
 import AddTodo from "../components/AddTodo.vue";
@@ -15,126 +13,93 @@ import CompletedCount from "../components/CompletedCount.vue";
 const { globalState } = useSidebarOpen();
 
 const route = useRoute();
-const pageTitle = ref();
 const currListId = ref({});
 const listNotFound = ref(false);
 const editPaneKey = ref(0);
 
 currListId.value = route.params.id;
 
-const listsStore = useListsStore();
-const { lists, list } = storeToRefs(listsStore);
-const { fetchLists, fetchList, addList } = listsStore;
-fetchLists();
+const listStore = useListStore();
+listStore.fetchLists().then(() => {
+  listStore.setCurrentList(currListId.value);
+});
 
-const todosStore = useTodosStore();
-const { todo, todosOpen, todosClosed } = storeToRefs(todosStore);
-const {
-  addTodo,
-  fetchTodos,
-  fetchTodo,
-  toggleCompleted,
-  setEditMode,
-  deleteTodo,
-} = todosStore;
-fetchTodos(currListId.value);
-
-// get the title of this list
-function getPageTitle() {
-  if (currListId.value === "inbox") {
-    pageTitle.value = "Inbox";
-  } else {
-    fetchList(currListId.value);
-    if (list.value) {
-      pageTitle.value = list.value.title;
-    } else {
-      listNotFound.value = true;
-      pageTitle.value = "List not found";
-    }
-  }
-}
-getPageTitle();
+const todoStore = useTodoStore();
+todoStore.fetchTodos(currListId.value);
 
 // reload list and todos data on route change
 watch(
   () => route.params.id,
   async (newId) => {
     currListId.value = newId;
-    getPageTitle();
-    fetchList(currListId.value);
-    fetchTodos(currListId.value);
+    listStore.setCurrentList(currListId.value);
+    todoStore.fetchTodos(currListId.value);
   }
 );
 
-// add a new list
 const addNewList = (value) => {
-  addList(value);
+  listStore.addList(value);
 };
 
-// add a new todo
 const addNewTodo = (value) => {
-  const newTodo = {
-    id: uuid(),
-    title: value,
-    completed: false,
-    dueDate: "",
-    notes: "",
-    listId: currListId.value,
-  };
-  addTodo(newTodo);
+  todoStore.addTodo(value, currListId.value);
   editPaneKey.value += 1;
 };
 
 const toggleItem = (itemId) => {
-  fetchTodo(itemId);
-  toggleCompleted();
-  fetchTodos(currListId.value);
+  todoStore.setCurrenTodo(itemId);
+  todoStore.toggleCompleted();
+  todoStore.fetchTodos(currListId.value);
 };
 
 const deleteItem = () => {
-  showEditPane.value = false;
-  deleteTodo();
+  todoStore.setEditMode(false);
+  todoStore.deleteTodo();
 };
 
-// open edit pane
-const showEditPane = ref(false);
 const editItem = (itemId) => {
-  fetchTodo(itemId);
-  showEditPane.value = true;
-  setEditMode(true);
+  todoStore.setCurrenTodo(itemId);
+  todoStore.setEditMode(true);
 };
+
 const closeEditPane = () => {
-  showEditPane.value = false;
-  fetchTodos(currListId.value);
+  todoStore.setEditMode(false);
+  todoStore.fetchTodos(currListId.value);
 };
 </script>
 
 <template>
   <div class="wrapper" :class="globalState ? 'sidebar-open' : 'sidebar-closed'">
-    <AppSidebar :lists="lists" @newList="addNewList" />
+    <AppSidebar :lists="listStore.lists" @newList="addNewList" />
     <main id="main">
       <div v-if="listNotFound" class="warning">
-        The list you are looking for cannot be found.
+        <header>
+          <h1>List not found</h1>
+        </header>
+        <p>
+          The list you are looking for cannot be found. Please check if the URL
+          is correct and try again.
+        </p>
       </div>
       <div v-else class="main-content">
         <header>
-          <h1>{{ pageTitle }}</h1>
+          <h1>{{ listStore.currentListTitle }}</h1>
         </header>
         <div class="todo-main">
           <div class="todo-items">
             <AddTodo @newTodo="addNewTodo" />
             <TodoItem
-              v-for="item in todosOpen"
+              v-for="item in todoStore.todosOpen"
               :key="item.id"
               :item="item"
               @toggleCompleted="toggleItem"
               @editTodo="editItem"
             />
           </div>
-          <div class="todo-items">
-            <CompletedCount :count="todosClosed.length" />
+          <div v-if="todoStore.todosClosed.length" class="todo-items">
+            <CompletedCount :count="todoStore.todosClosed.length" />
             <TodoItem
-              v-for="item in todosClosed"
+              v-for="item in todoStore.todosClosed"
               :key="item.id"
               :item="item"
               @toggleCompleted="toggleItem"
@@ -145,12 +110,11 @@ const closeEditPane = () => {
       </div>
     </main>
     <EditPane
-      v-if="todo"
-      v-show="showEditPane"
+      v-if="todoStore.currentTodo"
+      v-show="todoStore.editMode"
       @close-modal="closeEditPane"
       @delete-todo="deleteItem"
-      :lists="lists"
-      :currListId="currListId"
+      :lists="listStore.lists"
       :key="editPaneKey"
     />
   </div>

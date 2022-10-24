@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from "vue";
+import { computed } from "vue";
+import { toRefs } from "vue";
 import IconChecked from "./icons/IconChecked.vue";
 import IconUnchecked from "./icons/IconUnchecked.vue";
 
@@ -12,13 +13,11 @@ const props = defineProps({
     default: "",
   },
 });
-const item = ref(props.item);
+const { item } = toRefs(props);
 
-const dueDateLocale = ref();
-if (item.value.dueDate) {
-  const theDate = new Date(item.value.dueDate);
-  dueDateLocale.value = theDate.toLocaleDateString("nl-NL");
-}
+const dueDateLocale = computed(() =>
+  new Date(item.value.dueDate).toLocaleDateString("nl-NL")
+);
 
 const emit = defineEmits(["toggleCompleted", "editTodo"]);
 
@@ -38,7 +37,7 @@ const editPane = () => {
     </span>
     <span class="todo-item__title" @click="editPane">{{ item.title }}</span>
     <span v-if="listTitle" class="todo-item__list">{{ listTitle }}</span>
-    <span class="todo-item__date">{{ dueDateLocale }}</span>
+    <span v-if="item.dueDate" class="todo-item__date">{{ dueDateLocale }}</span>
   </div>
 </template>
 

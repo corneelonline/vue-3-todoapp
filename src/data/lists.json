@@ -1,0 +1,22 @@
+[
+  {
+    "id": "d801e187-ef98-4858-abd8-60bf42d06564",
+    "title": "Boodschappen"
+  },
+  {
+    "id": "63b69eb8-3a79-11ed-b15a-47642f6ee4cb",
+    "title": "Thuis"
+  },
+  {
+    "id": "63b69f9e-3a79-11ed-b15b-771cfd52c9fe",
+    "title": "Persoonlijk"
+  },
+  {
+    "id": "63b69fc6-3a79-11ed-b15c-ebf50007dd32",
+    "title": "Werk"
+  },
+  {
+    "id": "63b69fe4-3a79-11ed-b15d-ffc143520ee5",
+    "title": "Nog lezen"
+  }
+]

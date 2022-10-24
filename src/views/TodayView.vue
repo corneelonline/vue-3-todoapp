@@ -1,10 +1,8 @@
 <script setup>
 import { ref } from "vue";
-import { storeToRefs } from "pinia";
-import { v4 as uuid } from "uuid";
 import { useSidebarOpen } from "../composables/useSidebarOpen.js";
-import { useListsStore } from "../stores/lists";
-import { useTodosStore } from "../stores/todos";
+import { useListStore } from "../stores/ListStore";
+import { useTodoStore } from "../stores/TodoStore";
 import EditPane from "../components/EditPane.vue";
 import AppSidebar from "../components/AppSidebar.vue";
 import AddTodo from "../components/AddTodo.vue";
@@ -15,63 +13,45 @@ const { globalState } = useSidebarOpen();
 
 const editPaneKey = ref(0);
 
-const listsStore = useListsStore();
-const { lists } = storeToRefs(listsStore);
-const { fetchLists, addList } = listsStore;
-fetchLists();
+const listStore = useListStore();
+listStore.fetchLists();
 
-const todosStore = useTodosStore();
-const { todo, todosOpen, todosClosed } = storeToRefs(todosStore);
-const { fetchTodosOfToday } = todosStore;
-const { addTodo, fetchTodo, toggleCompleted, setEditMode, deleteTodo } =
-  todosStore;
-fetchTodosOfToday();
+const todoStore = useTodoStore();
+todoStore.fetchTodosOfToday();
 
-// add a new list
 const addNewList = (value) => {
-  addList(value);
+  listStore.addList(value);
 };
 
-// add a new todo
 const addNewTodo = (value) => {
   const today = new Date().toLocaleDateString("en-CA");
-  const newTodo = {
-    id: uuid(),
-    title: value,
-    completed: false,
-    dueDate: today,
-    notes: "",
-    listId: "inbox",
-  };
-  addTodo(newTodo);
+  todoStore.addTodo(value, "inbox", today);
   editPaneKey.value += 1;
 };
 
 const toggleItem = (itemId) => {
-  fetchTodo(itemId);
-  toggleCompleted();
-  fetchTodosOfToday();
+  todoStore.fetchTodo(itemId);
+  todoStore.toggleCompleted();
+  todoStore.fetchTodosOfToday();
 };
 
 const deleteItem = () => {
-  showEditPane.value = false;
-  deleteTodo();
+  todoStore.setEditMode(false);
+  todoStore.deleteTodo();
 };
 
-// open edit pane
-const showEditPane = ref(false);
 const editItem = (itemId) => {
-  fetchTodo(itemId);
-  showEditPane.value = true;
-  setEditMode(true);
+  todoStore.setCurrenTodo(itemId);
+  todoStore.setEditMode(true);
 };
+
 const closeEditPane = () => {
-  showEditPane.value = false;
-  fetchTodosOfToday();
+  todoStore.setEditMode(false);
+  todoStore.fetchTodosOfToday();
 };
 
 const getListTitle = (listId) => {
-  const theList = lists.value.filter((list) => list.id === listId).pop();
+  const theList = listStore.lists.filter((list) => list.id === listId).pop();
   if (theList !== undefined) {
     return theList.title;
   } else {
@@ -82,7 +62,7 @@ const getListTitle = (listId) => {
 
 <template>
   <div class="wrapper" :class="globalState ? 'sidebar-open' : 'sidebar-closed'">
-    <AppSidebar :lists="lists" @newList="addNewList" />
+    <AppSidebar :lists="listStore.lists" @newList="addNewList" />
     <main id="main">
       <div class="main-content">
         <header>
@@ -92,7 +72,7 @@ const getListTitle = (listId) => {
           <div class="todo-items">
             <AddTodo @newTodo="addNewTodo" />
             <TodoItem
-              v-for="item in todosOpen"
+              v-for="item in todoStore.todosOpen"
               :key="item.id"
               :item="item"
               :listTitle="getListTitle(item.listId)"
@@ -100,10 +80,10 @@ const getListTitle = (listId) => {
               @editTodo="editItem"
             />
           </div>
-          <div class="todo-items">
-            <CompletedCount :count="todosClosed.length" />
+          <div v-if="todoStore.todosClosed.length" class="todo-items">
+            <CompletedCount :count="todoStore.todosClosed.length" />
             <TodoItem
-              v-for="item in todosClosed"
+              v-for="item in todoStore.todosClosed"
               :key="item.id"
               :item="item"
               :listTitle="getListTitle(item.listId)"
@@ -115,11 +95,11 @@ const getListTitle = (listId) => {
       </div>
     </main>
     <EditPane
-      v-if="todo"
-      v-show="showEditPane"
+      v-if="todoStore.currentTodo"
+      v-show="todoStore.editMode"
       @close-modal="closeEditPane"
       @delete-todo="deleteItem"
-      :lists="lists"
+      :lists="listStore.lists"
       :key="editPaneKey"
     />
   </div>
