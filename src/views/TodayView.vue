@@ -19,12 +19,10 @@ listStore.fetchLists();
 const todoStore = useTodoStore();
 todoStore.fetchTodosOfToday();
 
-// add a new list
 const addNewList = (value) => {
   listStore.addList(value);
 };
 
-// add a new todo
 const addNewTodo = (value) => {
   const today = new Date().toLocaleDateString("en-CA");
   todoStore.addTodo(value, "inbox", today);

@@ -47,7 +47,6 @@ const addNewTodo = (value) => {
 };
 
 const toggleItem = (itemId) => {
-  // console.log("itemId: " + itemId);
   todoStore.setCurrenTodo(itemId);
   todoStore.toggleCompleted();
   todoStore.fetchTodos(currListId.value);
