@@ -1,10 +1,25 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { RouterLink } from "vue-router";
 import IconInbox from "./icons/IconInbox.vue";
 import IconCalendar from "./icons/IconCalendar.vue";
 import IconList from "./icons/IconList.vue";
 import IconAdd from "./icons/IconAdd.vue";
+import { useTodoStore } from "../stores/TodoStore";
+
+const todoStore = useTodoStore();
+todoStore.fetchTodos();
+const todoCount = computed(() => {
+  return (listId) => {
+    let todos;
+    if (listId === "today") {
+      todos = todoStore.todosOpenToday();
+    } else {
+      todos = todoStore.todosOpen(listId);
+    }
+    return todos.length;
+  };
+});
 
 // eslint-disable-next-line no-unused-vars
 const props = defineProps({
@@ -30,14 +45,17 @@ const handleSubmit = () => {
       <li class="inbox">
         <span class="icon"><IconInbox /></span>
         <RouterLink to="/app/list/inbox">Inbox</RouterLink>
+        <span class="todo-count">{{ todoCount("inbox") }}</span>
       </li>
       <li class="today">
         <span class="icon"><IconCalendar /></span>
         <RouterLink to="/app/today">Today</RouterLink>
+        <span class="todo-count">{{ todoCount("today") }}</span>
       </li>
       <li v-for="list in lists" :key="list.id" class="user-defined">
         <span class="icon"><IconList /></span>
         <RouterLink :to="`/app/list/${list.id}`">{{ list.title }}</RouterLink>
+        <span class="todo-count">{{ todoCount(list.id) }}</span>
       </li>
     </ul>
     <form class="add-list" @submit.prevent="handleSubmit">
@@ -105,6 +123,7 @@ li {
 li a {
   text-decoration: none;
   display: block;
+  flex-grow: 1;
 }
 
 li span.icon {
@@ -130,6 +149,11 @@ li:has(.router-link-active) {
   background-color: var(--color-bg-list-active);
   border: 1px solid var(--color-bg-list-active);
   border-radius: 4px;
+}
+
+li span.todo-count {
+  color: var(--color-text-lighter);
+  font-size: 85%;
 }
 
 form.add-list .form-field {

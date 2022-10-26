@@ -25,7 +25,7 @@ listStore.fetchLists().then(() => {
 });
 
 const todoStore = useTodoStore();
-todoStore.fetchTodos(currListId.value);
+todoStore.fetchTodos();
 
 // reload list and todos data on route change
 watch(
@@ -33,7 +33,7 @@ watch(
   async (newId) => {
     currListId.value = newId;
     listStore.setCurrentList(currListId.value);
-    todoStore.fetchTodos(currListId.value);
+    todoStore.fetchTodos();
   }
 );
 
@@ -47,9 +47,9 @@ const addNewTodo = (value) => {
 };
 
 const toggleItem = (itemId) => {
-  todoStore.setCurrenTodo(itemId);
+  todoStore.setCurrentTodo(itemId);
   todoStore.toggleCompleted();
-  todoStore.fetchTodos(currListId.value);
+  todoStore.fetchTodos();
 };
 
 const deleteItem = () => {
@@ -58,13 +58,13 @@ const deleteItem = () => {
 };
 
 const editItem = (itemId) => {
-  todoStore.setCurrenTodo(itemId);
+  todoStore.setCurrentTodo(itemId);
   todoStore.setEditMode(true);
 };
 
 const closeEditPane = () => {
   todoStore.setEditMode(false);
-  todoStore.fetchTodos(currListId.value);
+  todoStore.fetchTodos();
 };
 </script>
 
@@ -89,17 +89,20 @@ const closeEditPane = () => {
           <div class="todo-items">
             <AddTodo @newTodo="addNewTodo" />
             <TodoItem
-              v-for="item in todoStore.todosOpen"
+              v-for="item in todoStore.todosOpen(currListId)"
               :key="item.id"
               :item="item"
               @toggleCompleted="toggleItem"
               @editTodo="editItem"
             />
           </div>
-          <div v-if="todoStore.todosClosed.length" class="todo-items">
-            <CompletedCount :count="todoStore.todosClosed.length" />
+          <div
+            v-if="todoStore.todosClosed(currListId).length"
+            class="todo-items"
+          >
+            <CompletedCount :count="todoStore.todosClosed(currListId).length" />
             <TodoItem
-              v-for="item in todoStore.todosClosed"
+              v-for="item in todoStore.todosClosed(currListId)"
               :key="item.id"
               :item="item"
               @toggleCompleted="toggleItem"

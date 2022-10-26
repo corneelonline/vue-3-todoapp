@@ -1,6 +1,8 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
 import { v4 as uuid } from "uuid";
 
+const currentDate = new Date().toJSON().slice(0, 10);
+
 export const useTodoStore = defineStore("TodoStore", {
   state: () => {
     return {
@@ -10,10 +12,30 @@ export const useTodoStore = defineStore("TodoStore", {
     };
   },
   getters: {
-    todosOpen: (state) =>
-      state.todos.filter((todo) => todo.completed === false),
-    todosClosed: (state) =>
-      state.todos.filter((todo) => todo.completed === true),
+    todosOpenToday: (state) => {
+      return () =>
+        state.todos.filter(
+          (todo) => todo.dueDate === currentDate && todo.completed === false
+        );
+    },
+    todosClosedToday: (state) => {
+      return () =>
+        state.todos.filter(
+          (todo) => todo.dueDate === currentDate && todo.completed === true
+        );
+    },
+    todosOpen: (state) => {
+      return (listId) =>
+        state.todos.filter(
+          (todo) => todo.listId === listId && todo.completed === false
+        );
+    },
+    todosClosed: (state) => {
+      return (listId) =>
+        state.todos.filter(
+          (todo) => todo.listId === listId && todo.completed === true
+        );
+    },
     currentDateLong: (state) => {
       const dateOptions = {
         timeZone: "UTC",
@@ -31,16 +53,10 @@ export const useTodoStore = defineStore("TodoStore", {
     },
   },
   actions: {
-    async fetchTodos(listId) {
-      const todos = (await import("@/data/todos.json")).default;
-      this.todos = todos.filter((todo) => todo.listId === listId);
+    async fetchTodos() {
+      this.todos = (await import("@/data/todos.json")).default;
     },
-    async fetchTodosOfToday() {
-      const currentDate = new Date().toJSON().slice(0, 10);
-      const todos = (await import("@/data/todos.json")).default;
-      this.todos = todos.filter((todo) => todo.dueDate === currentDate);
-    },
-    setCurrenTodo(id) {
+    setCurrentTodo(id) {
       this.currentTodo = this.todos.filter((todo) => todo.id === id).pop();
     },
     clearTodo() {

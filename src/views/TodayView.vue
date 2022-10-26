@@ -17,7 +17,7 @@ const listStore = useListStore();
 listStore.fetchLists();
 
 const todoStore = useTodoStore();
-todoStore.fetchTodosOfToday();
+todoStore.fetchTodos();
 
 const addNewList = (value) => {
   listStore.addList(value);
@@ -30,9 +30,9 @@ const addNewTodo = (value) => {
 };
 
 const toggleItem = (itemId) => {
-  todoStore.fetchTodo(itemId);
+  todoStore.setCurrentTodo(itemId);
   todoStore.toggleCompleted();
-  todoStore.fetchTodosOfToday();
+  todoStore.fetchTodos();
 };
 
 const deleteItem = () => {
@@ -41,13 +41,13 @@ const deleteItem = () => {
 };
 
 const editItem = (itemId) => {
-  todoStore.setCurrenTodo(itemId);
+  todoStore.setCurrentTodo(itemId);
   todoStore.setEditMode(true);
 };
 
 const closeEditPane = () => {
   todoStore.setEditMode(false);
-  todoStore.fetchTodosOfToday();
+  todoStore.fetchTodos();
 };
 
 const getListTitle = (listId) => {
@@ -72,7 +72,7 @@ const getListTitle = (listId) => {
           <div class="todo-items">
             <AddTodo @newTodo="addNewTodo" />
             <TodoItem
-              v-for="item in todoStore.todosOpen"
+              v-for="item in todoStore.todosOpenToday()"
               :key="item.id"
               :item="item"
               :listTitle="getListTitle(item.listId)"
@@ -80,10 +80,10 @@ const getListTitle = (listId) => {
               @editTodo="editItem"
             />
           </div>
-          <div v-if="todoStore.todosClosed.length" class="todo-items">
-            <CompletedCount :count="todoStore.todosClosed.length" />
+          <div v-if="todoStore.todosClosedToday().length" class="todo-items">
+            <CompletedCount :count="todoStore.todosClosedToday().length" />
             <TodoItem
-              v-for="item in todoStore.todosClosed"
+              v-for="item in todoStore.todosClosedToday()"
               :key="item.id"
               :item="item"
               :listTitle="getListTitle(item.listId)"
